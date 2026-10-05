@@ -27,3 +27,5 @@ await notify({
 The data lives in the `Notification` and `DeviceToken` models in `packages/database/prisma/notification/notification.prisma`.
 
 The package is not wired into an app yet. To use it, add endpoints that call `registerDeviceToken` and `getUserNotifications`, and have the mobile app request permission and send its token with `expo-notifications`.
+
+See [docs/push-notifications.md](../../docs/push-notifications.md) for the step-by-step guide.

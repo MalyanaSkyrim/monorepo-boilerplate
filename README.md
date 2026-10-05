@@ -21,7 +21,7 @@ app-boilerplate/
 │   ├── notifications/    # In-app notifications and Expo push delivery
 │   └── config/           # Shared ESLint, Prettier and TypeScript configs
 ├── tooling/              # Bruno API collection, deploy scripts, MCP server
-├── docs/                 # Architecture and mobile deployment guides
+├── docs/                 # Architecture, push notifications and mobile deployment guides
 ├── .agent/               # AI agent rules and skills
 └── .github/workflows/    # CI and deploy pipelines
 ```
