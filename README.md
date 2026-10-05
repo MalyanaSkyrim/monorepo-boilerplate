@@ -101,6 +101,9 @@ Run a script in one workspace with `pnpm --filter=@app/<name> <script>`.
 The deploy workflows are manual (`workflow_dispatch`) so a fresh clone does not fail on push.
 
 - **Web and API** run on Google Cloud Run. Set `PROJECT_ID` and `ARTIFACTS_REPO` in `.github/workflows/deploy-*.yml`, add the `GCP_SA_KEY` secret, and create each service once with `tooling/create-service.sh <app> <staging|production>`.
+- After creating the `api-auth` service, set its environment on Cloud Run: `API_AUTH_PORT=3000` (the port Cloud Run routes to), `AUTH_SECRET`, `API_KEY`, `REDIS_URL`, `API_AUTH_URL`, and the Resend and OAuth values you use. Each deploy validates these against `apps/api-auth/src/env.ts` before building.
+- Database migrations run in the deploy workflow once `packages/database/prisma/migrations` exists. It reads the `DATABASE_URL_STAGING` and `DATABASE_URL_PROD` secrets from Secret Manager.
+- The mobile job reads `GOOGLE_OAUTH_CLIENT_IDS` from Secret Manager (web, Android, iOS client ids, comma-separated) and the Apple and Fastlane values from GitHub secrets.
 - **Mobile (iOS)** ships to TestFlight with Fastlane. Follow [docs/mobile-deployment.md](docs/mobile-deployment.md).
 
 The local database is CockroachDB. The Prisma datasource provider is `cockroachdb`; switch it to `postgresql` in `packages/database/prisma/schema.prisma` if you prefer plain Postgres.
