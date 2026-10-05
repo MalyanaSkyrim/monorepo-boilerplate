@@ -1,0 +1,122 @@
+diff --git a/lib/commonjs/datetime-picker.js b/lib/commonjs/datetime-picker.js
+index ada44d694fb3a488e026addd4c2eb9d267d4a2f3..7c7959ed46ac85ad4691a13c3ee48a1efaaa5096 100644
+--- a/lib/commonjs/datetime-picker.js
++++ b/lib/commonjs/datetime-picker.js
+@@ -73,6 +73,7 @@ const DateTimePicker = props => {
+     year,
+     onMonthChange = () => {},
+     onYearChange = () => {},
++    onDisplayedMonthChange,
+     use12Hours
+   } = props;
+   _dayjs.default.tz.setDefault(timeZone);
+@@ -391,12 +392,16 @@ const DateTimePicker = props => {
+     setCalendarView('day');
+   }, [setCalendarView, onYearChange]);
+   const onChangeMonth = (0, _react.useCallback)(value => {
+-    const newDate = (0, _dayjs.default)(stateRef.current.currentDate).add(value, 'month');
++    const current = (0, _dayjs.default)(stateRef.current.currentDate);
++    const newDate = current.add(value, 'month');
+     dispatch({
+       type: _enums.CalendarActionKind.CHANGE_CURRENT_DATE,
+       payload: (0, _dayjs.default)(newDate)
+     });
+-  }, [stateRef, dispatch]);
++    if (value !== 0) {
++      onDisplayedMonthChange?.(newDate.toDate());
++    }
++  }, [stateRef, dispatch, onDisplayedMonthChange]);
+   const onChangeYear = (0, _react.useCallback)(value => {
+     dispatch({
+       type: _enums.CalendarActionKind.CHANGE_CURRENT_YEAR,
+diff --git a/lib/module/datetime-picker.js b/lib/module/datetime-picker.js
+index e6c0c7e9652a1e910c4498a57e810a6b89c2c732..971fbdcbab7c98b47e4414e64bf1716a2843c8bc 100644
+--- a/lib/module/datetime-picker.js
++++ b/lib/module/datetime-picker.js
+@@ -65,6 +65,7 @@ const DateTimePicker = props => {
+     year,
+     onMonthChange = () => {},
+     onYearChange = () => {},
++    onDisplayedMonthChange,
+     use12Hours
+   } = props;
+   dayjs.tz.setDefault(timeZone);
+@@ -383,12 +384,16 @@ const DateTimePicker = props => {
+     setCalendarView('day');
+   }, [setCalendarView, onYearChange]);
+   const onChangeMonth = useCallback(value => {
+-    const newDate = dayjs(stateRef.current.currentDate).add(value, 'month');
++    const current = dayjs(stateRef.current.currentDate);
++    const newDate = current.add(value, 'month');
+     dispatch({
+       type: CalendarActionKind.CHANGE_CURRENT_DATE,
+       payload: dayjs(newDate)
+     });
+-  }, [stateRef, dispatch]);
++    if (value !== 0) {
++      onDisplayedMonthChange?.(newDate.toDate());
++    }
++  }, [stateRef, dispatch, onDisplayedMonthChange]);
+   const onChangeYear = useCallback(value => {
+     dispatch({
+       type: CalendarActionKind.CHANGE_CURRENT_YEAR,
+diff --git a/lib/typescript/types.d.ts b/lib/typescript/types.d.ts
+index 67ee6b841133621b5cf1cb440e843524688e46f7..b91b93e75a994f6284e44a0b9bf55d693b27cf52 100644
+--- a/lib/typescript/types.d.ts
++++ b/lib/typescript/types.d.ts
+@@ -139,6 +139,8 @@ export interface DatePickerBaseProps {
+     month?: number;
+     year?: number;
+     onMonthChange?: (month: number) => void;
++    /** Fired when the visible month changes via header prev/next in day view. Argument is the calendar anchor date for that month. */
++    onDisplayedMonthChange?: (date: Date) => void;
+     onYearChange?: (year: number) => void;
+ }
+ export type Numerals = 'latn' | 'arab' | 'arabext' | 'deva' | 'beng' | 'guru' | 'gujr' | 'orya' | 'tamldec' | 'telu' | 'knda' | 'mlym';
+diff --git a/src/datetime-picker.tsx b/src/datetime-picker.tsx
+index 8deb6226df0af78dcc1088ad171f89b4a909fe51..88212959dd698b51cad2e86ded00325a372088df 100644
+--- a/src/datetime-picker.tsx
++++ b/src/datetime-picker.tsx
+@@ -114,6 +114,7 @@ const DateTimePicker = (
+     year,
+     onMonthChange = () => {},
+     onYearChange = () => {},
++    onDisplayedMonthChange,
+     use12Hours,
+   } = props;
+ 
+@@ -560,13 +561,19 @@ const DateTimePicker = (
+ 
+   const onChangeMonth = useCallback(
+     (value: number) => {
+-      const newDate = dayjs(stateRef.current.currentDate).add(value, 'month');
++      const current = dayjs(stateRef.current.currentDate);
++      const newDate = current.add(value, 'month');
+       dispatch({
+         type: CalendarActionKind.CHANGE_CURRENT_DATE,
+         payload: dayjs(newDate),
+       });
++      // Chevron passes ±1 only. Always notify: `isSame(..., 'month')` can be wrong with
++      // calendar/timezone plugins and would skip the callback (no parent refetch).
++      if (value !== 0) {
++        onDisplayedMonthChange?.(newDate.toDate());
++      }
+     },
+-    [stateRef, dispatch]
++    [stateRef, dispatch, onDisplayedMonthChange]
+   );
+ 
+   const onChangeYear = useCallback(
+diff --git a/src/types.ts b/src/types.ts
+index c01da1c75eb579ae1014350cd0291882bc4551d8..c695a060af3c4407a335fc445bcba5033c0d5ffd 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -175,6 +175,8 @@ export interface DatePickerBaseProps {
+   month?: number;
+   year?: number;
+   onMonthChange?: (month: number) => void;
++  /** Fired when the visible month changes via header prev/next in day view. Argument is the calendar anchor date for that month. */
++  onDisplayedMonthChange?: (date: Date) => void;
+   onYearChange?: (year: number) => void;
+ }
+ 

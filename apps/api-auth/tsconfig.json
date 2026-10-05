@@ -1,0 +1,15 @@
+{
+  "extends": "@app/config/typescript/server.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react",
+    "outDir": "./build/",
+    "paths": {
+      "@app/config/*": ["../../packages/config/*"],
+      "@app/database": ["../../packages/database/src/index.ts"],
+      "@app/database/*": ["../../packages/database/src/*"]
+    }
+  },
+  "include": ["./src/", "./scripts/", "./tsup.config.ts"],
+  "exclude": ["**/node_modules", "**/.*/"]
+}

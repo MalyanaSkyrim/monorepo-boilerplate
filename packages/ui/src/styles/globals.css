@@ -1,0 +1,370 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 98%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    /* Re-mapped Primary to mobile-ui primary-500 equivalent */
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 348 83% 47%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 243 75% 59%;
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+
+    /* Mobile UI Specific Tokens */
+    --color-primary-0: 236 237 254;
+    --color-primary-25: 195 198 253;
+    --color-primary-50: 167 170 252;
+    --color-primary-100: 126 131 251;
+    --color-primary-200: 101 107 250;
+    --color-primary-300: 63 70 249;
+    /* Secondary  */
+    --color-secondary-0: 253 253 253;
+    --color-secondary-50: 251 251 251;
+    --color-secondary-100: 246 246 246;
+    --color-secondary-200: 242 242 242;
+    --color-secondary-300: 237 237 237;
+    --color-secondary-400: 230 230 231;
+    --color-secondary-500: 217 217 219;
+    --color-secondary-600: 198 199 199;
+    --color-secondary-700: 189 189 189;
+    --color-secondary-800: 177 177 177;
+    --color-secondary-900: 165 164 164;
+    --color-secondary-950: 157 157 157;
+    /* Tertiary */
+    --color-tertiary-0: 255 250 245;
+    --color-tertiary-50: 255 242 229;
+    --color-tertiary-100: 255 233 213;
+    --color-tertiary-200: 254 209 170;
+    --color-tertiary-300: 253 180 116;
+    --color-tertiary-400: 251 157 75;
+    --color-tertiary-500: 231 129 40;
+    --color-tertiary-600: 215 117 31;
+    --color-tertiary-700: 180 98 26;
+    --color-tertiary-800: 130 73 23;
+    --color-tertiary-900: 108 61 19;
+    --color-tertiary-950: 84 49 18;
+    /* Error */
+    --color-error-0: 255 240 243;
+    --color-error-25: 250 219 225;
+    --color-error-50: 237 130 150;
+    --color-error-100: 223 28 65;
+    --color-error-200: 150 19 44;
+    --color-error-300: 113 14 33;
+    /* Success */
+    --color-success-0: 239 254 250;
+    --color-success-25: 221 243 239;
+    --color-success-50: 158 225 212;
+    --color-success-100: 64 196 170;
+    --color-success-200: 40 128 111;
+    --color-success-300: 24 78 68;
+    /* Warning */
+    --color-warning-0: 255 246 224;
+    --color-warning-25: 250 237 204;
+    --color-warning-50: 252 218 131;
+    --color-warning-100: 255 190 76;
+    --color-warning-200: 150 100 34;
+    --color-warning-300: 92 61 31;
+    /* Info */
+    --color-info-0: 236 248 254;
+    --color-info-50: 199 235 252;
+    --color-info-100: 162 221 250;
+    --color-info-200: 124 207 248;
+    --color-info-300: 87 194 246;
+    --color-info-400: 50 180 244;
+    --color-info-500: 13 166 242;
+    --color-info-600: 11 141 205;
+    --color-info-700: 9 115 168;
+    --color-info-800: 7 90 131;
+    --color-info-900: 5 64 93;
+    --color-info-950: 3 38 56;
+    /* Typography */
+    --color-typography-0: 254 254 255;
+    --color-typography-50: 245 245 245;
+    --color-typography-100: 229 229 229;
+    --color-typography-200: 219 219 220;
+    --color-typography-300: 212 212 212;
+    --color-typography-400: 163 163 163;
+    --color-typography-500: 140 140 140;
+    --color-typography-600: 115 115 115;
+    --color-typography-700: 82 82 82;
+    --color-typography-800: 64 64 64;
+    --color-typography-900: 38 38 39;
+    --color-typography-950: 23 23 23;
+    /* Outline */
+    --color-outline-0: 253 254 254;
+    --color-outline-50: 243 243 243;
+    --color-outline-100: 230 230 230;
+    --color-outline-200: 221 220 219;
+    --color-outline-300: 211 211 211;
+    --color-outline-400: 165 163 163;
+    --color-outline-500: 140 141 141;
+    --color-outline-600: 115 116 116;
+    --color-outline-700: 83 82 82;
+    --color-outline-800: 65 65 65;
+    --color-outline-900: 39 38 36;
+    --color-outline-950: 26 23 23;
+    /* Background */
+    --color-background-0: 255 255 255;
+    --color-background-50: 246 246 246;
+    --color-background-100: 242 241 241;
+    --color-background-200: 220 219 219;
+    --color-background-300: 213 212 212;
+    --color-background-400: 162 163 163;
+    --color-background-500: 142 142 142;
+    --color-background-600: 116 116 116;
+    --color-background-700: 83 82 82;
+    --color-background-800: 65 64 64;
+    --color-background-900: 39 38 37;
+    --color-background-950: 18 18 18;
+    /* Background Special */
+    --color-background-error: 254 241 241;
+    --color-background-warning: 255 243 234;
+    --color-background-success: 237 252 242;
+    --color-background-muted: 247 248 247;
+    --color-background-info: 235 248 254;
+    /* Greyscale */
+    --color-greyscale-0: 255 255 255;
+    --color-greyscale-25: 246 248 250;
+    --color-greyscale-50: 236 239 243;
+    --color-greyscale-100: 223 225 231;
+    --color-greyscale-200: 193 199 208;
+    --color-greyscale-300: 164 172 185;
+    --color-greyscale-400: 129 136 152;
+    --color-greyscale-500: 102 109 128;
+    --color-greyscale-600: 54 57 74;
+    --color-greyscale-700: 39 40 53;
+    --color-greyscale-800: 26 27 37;
+    --color-greyscale-900: 13 13 18;
+    /* Sky */
+    --color-sky-0: 240 251 255;
+    --color-sky-25: 209 240 250;
+    --color-sky-100: 51 207 255;
+    --color-sky-200: 17 107 151;
+    --color-sky-300: 12 78 110;
+    /* Focus Ring Indicator  */
+    --color-indicator-primary: 55 55 55;
+    --color-indicator-info: 83 153 236;
+    --color-indicator-error: 185 28 28;
+  }
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 348 83% 47%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 243 75% 59%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    /* Mobile UI Specific Tokens (Dark Mode) */
+    --color-primary-0: 236 237 254;
+    --color-primary-25: 195 198 253;
+    --color-primary-50: 167 170 252;
+    --color-primary-100: 126 131 251;
+    --color-primary-200: 101 107 250;
+    --color-primary-300: 63 70 249;
+    /* Secondary  */
+    --color-secondary-0: 20 20 20;
+    --color-secondary-50: 23 23 23;
+    --color-secondary-100: 31 31 31;
+    --color-secondary-200: 39 39 39;
+    --color-secondary-300: 44 44 44;
+    --color-secondary-400: 56 57 57;
+    --color-secondary-500: 63 64 64;
+    --color-secondary-600: 86 86 86;
+    --color-secondary-700: 110 110 110;
+    --color-secondary-800: 135 135 135;
+    --color-secondary-900: 150 150 150;
+    --color-secondary-950: 164 164 164;
+    /* Tertiary */
+    --color-tertiary-0: 84 49 18;
+    --color-tertiary-50: 108 61 19;
+    --color-tertiary-100: 130 73 23;
+    --color-tertiary-200: 180 98 26;
+    --color-tertiary-300: 215 117 31;
+    --color-tertiary-400: 231 129 40;
+    --color-tertiary-500: 251 157 75;
+    --color-tertiary-600: 253 180 116;
+    --color-tertiary-700: 254 209 170;
+    --color-tertiary-800: 255 233 213;
+    --color-tertiary-900: 255 242 229;
+    --color-tertiary-950: 255 250 245;
+    /* Error */
+    --color-error-0: 113 14 33;
+    --color-error-25: 150 19 44;
+    --color-error-50: 223 28 65;
+    --color-error-100: 237 130 150;
+    --color-error-200: 250 219 225;
+    --color-error-300: 255 240 243;
+    /* Success */
+    --color-success-0: 24 78 68;
+    --color-success-25: 40 128 111;
+    --color-success-50: 64 196 170;
+    --color-success-100: 158 225 212;
+    --color-success-200: 221 243 239;
+    --color-success-300: 239 254 250;
+    /* Warning */
+    --color-warning-0: 92 61 31;
+    --color-warning-25: 150 100 34;
+    --color-warning-50: 255 190 76;
+    --color-warning-100: 252 218 131;
+    --color-warning-200: 250 237 204;
+    --color-warning-300: 255 246 224;
+    /* Info */
+    --color-info-0: 3 38 56;
+    --color-info-50: 5 64 93;
+    --color-info-100: 7 90 131;
+    --color-info-200: 9 115 168;
+    --color-info-300: 11 141 205;
+    --color-info-400: 13 166 242;
+    --color-info-500: 50 180 244;
+    --color-info-600: 87 194 246;
+    --color-info-700: 124 207 248;
+    --color-info-800: 162 221 250;
+    --color-info-900: 199 235 252;
+    --color-info-950: 236 248 254;
+    /* Typography */
+    --color-typography-0: 23 23 23;
+    --color-typography-50: 38 38 39;
+    --color-typography-100: 64 64 64;
+    --color-typography-200: 82 82 82;
+    --color-typography-300: 115 115 115;
+    --color-typography-400: 140 140 140;
+    --color-typography-500: 163 163 163;
+    --color-typography-600: 212 212 212;
+    --color-typography-700: 219 219 220;
+    --color-typography-800: 229 229 229;
+    --color-typography-900: 245 245 245;
+    --color-typography-950: 254 254 255;
+    /* Outline */
+    --color-outline-0: 26 23 23;
+    --color-outline-50: 39 38 36;
+    --color-outline-100: 65 65 65;
+    --color-outline-200: 83 82 82;
+    --color-outline-300: 115 116 116;
+    --color-outline-400: 140 141 141;
+    --color-outline-500: 165 163 163;
+    --color-outline-600: 211 211 211;
+    --color-outline-700: 221 220 219;
+    --color-outline-800: 230 230 230;
+    --color-outline-900: 243 243 243;
+    --color-outline-950: 253 254 254;
+    /* Background */
+    --color-background-0: 18 18 18;
+    --color-background-50: 39 38 37;
+    --color-background-100: 65 64 64;
+    --color-background-200: 83 82 82;
+    --color-background-300: 116 116 116;
+    --color-background-400: 142 142 142;
+    --color-background-500: 162 163 163;
+    --color-background-600: 213 212 212;
+    --color-background-700: 229 228 228;
+    --color-background-800: 242 241 241;
+    --color-background-900: 246 246 246;
+    --color-background-950: 255 255 255;
+    /* Background Special */
+    --color-background-error: 66 43 43;
+    --color-background-warning: 65 47 35;
+    --color-background-success: 28 43 33;
+    --color-background-muted: 51 51 51;
+    --color-background-info: 26 40 46;
+    /* Greyscale */
+    --color-greyscale-0: 13 13 18;
+    --color-greyscale-25: 26 27 37;
+    --color-greyscale-50: 39 40 53;
+    --color-greyscale-100: 54 57 74;
+    --color-greyscale-200: 102 109 128;
+    --color-greyscale-300: 129 136 152;
+    --color-greyscale-400: 164 172 185;
+    --color-greyscale-500: 193 199 208;
+    --color-greyscale-600: 223 225 231;
+    --color-greyscale-700: 236 239 243;
+    --color-greyscale-800: 246 248 250;
+    --color-greyscale-900: 255 255 255;
+    /* Sky */
+    --color-sky-0: 12 78 110;
+    --color-sky-25: 17 107 151;
+    --color-sky-100: 51 207 255;
+    --color-sky-200: 209 240 250;
+    --color-sky-300: 240 251 255;
+    /* Focus Ring Indicator  */
+    --color-indicator-primary: 247 247 247;
+    --color-indicator-info: 161 199 245;
+    --color-indicator-error: 232 70 69;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: Geist, 'Geist Mono';
+  }
+}
+
+.section_container {
+  @apply xs:px-5 xs:py-16 w-screen overflow-hidden px-4 py-10 md:px-8 lg:mx-auto lg:max-w-7xl lg:px-10 xl:px-0;
+}
+
+.section_title {
+  @apply font-integralCF mx-auto w-fit text-[32px] font-bold sm:text-4xl 2xl:text-5xl;
+}
+
+/* DatePicker Conflict Styling Overrides */
+button.date-picker-conflict,
+button.date-picker-conflict[data-in-range],
+button.date-picker-conflict[data-selected] {
+  @apply !bg-amber-50 !text-amber-900 dark:!bg-amber-950 dark:!text-amber-50;
+}
+
+button.date-picker-conflict-endpoint,
+button.date-picker-conflict-endpoint[data-in-range],
+button.date-picker-conflict-endpoint[data-selected] {
+  @apply !bg-amber-500 !text-white;
+}
+
+.separator {
+  @apply xs:mx-5 mx-4 h-[1px] bg-gray-300 md:mx-8 lg:mx-10 xl:mx-20 dark:bg-gray-600;
+}

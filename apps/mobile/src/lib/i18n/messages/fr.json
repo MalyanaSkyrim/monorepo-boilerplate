@@ -1,0 +1,223 @@
+{
+  "profile": {
+    "menu": {
+      "general": "Général",
+      "personalInfo": "Informations Personnelles",
+      "language": "Langue",
+      "helpCenter": "Centre d'Aide",
+      "legal": "Légal",
+      "privacyPolicy": "Politique de Confidentialité",
+      "termsConditions": "Termes & Conditions",
+      "aboutApp": "À Propos de l'Application",
+      "logout": "Se déconnecter"
+    },
+    "helpCenter": {
+      "title": "Centre d'aide",
+      "intro": "Vous pouvez nous contacter par e-mail ou par téléphone ci-dessous. Nous sommes là pour vous aider.",
+      "supportEmail": "support@example.com",
+      "supportPhoneDisplay": "+1 555 000 0000",
+      "supportPhoneHref": "+15550000000",
+      "emailA11y": "Assistance par e-mail",
+      "phoneA11y": "Appeler le support"
+    },
+    "language": {
+      "title": "Langue",
+      "english": "Anglais (US)",
+      "french": "Français",
+      "arabic": "Arabe"
+    },
+    "personalData": {
+      "userName": "Nom d'utilisateur",
+      "updateSuccess": "Profil mis à jour avec succès",
+      "updateError": "Échec de la mise à jour du profil. Veuillez réessayer.",
+      "title": "Données personnelles",
+      "firstName": "Prénom",
+      "enterFirstName": "Entrez votre prénom",
+      "lastName": "Nom",
+      "enterLastName": "Entrez votre nom",
+      "email": "E-mail",
+      "enterEmail": "Entrez votre e-mail",
+      "phone": "Numéro de téléphone",
+      "enterPhone": "Entrez votre numéro de téléphone",
+      "phoneValidation": "Le numéro de téléphone doit être valide ou vide",
+      "saveChanges": "Enregistrer les modifications"
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "content": "Ceci est un texte provisoire. Remplacez-le par votre propre document (politique de confidentialité) avant de publier l'application, et faites-le relire par un professionnel qualifié."
+    },
+    "terms": {
+      "title": "Conditions générales",
+      "content": "Ceci est un texte provisoire. Remplacez-le par votre propre document (conditions générales) avant de publier l'application, et faites-le relire par un professionnel qualifié."
+    }
+  },
+  "home": {
+    "welcome": "Bienvenue, {name}",
+    "placeholder": "Ceci est votre écran d'accueil. Remplacez-le par votre première fonctionnalité."
+  },
+  "onboarding": {
+    "skip": "Passer",
+    "next": "Suivant",
+    "steps": {
+      "one": {
+        "title": "Tout ce dont vous avez besoin au même endroit",
+        "description": "Décrivez ici le premier avantage de votre produit."
+      },
+      "two": {
+        "title": "Rapide, simple et sécurisé",
+        "description": "Décrivez ici le deuxième avantage de votre produit."
+      },
+      "three": {
+        "title": "Prêt quand vous l’êtes",
+        "description": "Décrivez ici le troisième avantage de votre produit."
+      }
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "settings": "Paramètres"
+  },
+  "auth": {
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "getStarted": {
+      "title": "Bienvenue dans\nvotre nouvelle application",
+      "subtitle": "Créez un compte ou connectez-vous pour commencer.",
+      "button": "C'est parti",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter"
+    },
+    "signUp": {
+      "header": {
+        "title": "Créer un compte",
+        "subtitle": "Créez un compte pour commencer."
+      },
+      "form": {
+        "firstName": {
+          "label": "Prénom",
+          "placeholder": "Entrez votre prénom"
+        },
+        "lastName": {
+          "label": "Nom",
+          "placeholder": "Entrez votre nom"
+        },
+        "email": {
+          "label": "E-mail",
+          "placeholder": "Entrez votre e-mail"
+        },
+        "phone": {
+          "label": "Numéro de téléphone",
+          "placeholder": "Entrez votre numéro de téléphone"
+        },
+        "password": {
+          "label": "Mot de passe",
+          "placeholder": "Entrez votre mot de passe"
+        },
+        "submit": "S'inscrire"
+      },
+      "footer": {
+        "agreeTo": "En vous inscrivant, vous acceptez les\n",
+        "terms": "Conditions d'utilisation",
+        "and": " et la ",
+        "privacy": "Politique de confidentialité",
+        "alreadyHaveAccount": "Vous avez déjà un compte ? ",
+        "signIn": "Se connecter"
+      }
+    },
+    "signIn": {
+      "header": {
+        "title": "Bon retour !",
+        "subtitle": "Connectez-vous pour accéder à votre compte."
+      },
+      "form": {
+        "email": {
+          "label": "E-mail",
+          "placeholder": "Entrez votre e-mail"
+        },
+        "password": {
+          "label": "Mot de passe",
+          "placeholder": "Entrez votre mot de passe"
+        },
+        "forgotPassword": "Mot de passe oublié ?",
+        "submit": "Se connecter"
+      },
+      "options": {
+        "orContinue": "Ou continuer avec",
+        "noAccount": "Vous n'avez pas de compte ?",
+        "signUp": "S'inscrire"
+      }
+    },
+    "forgotPassword": {
+      "header": {
+        "title": "Mot de passe oublié ?",
+        "subtitle": "Entrez votre adresse e-mail et nous vous enverrons un code pour réinitialiser votre mot de passe."
+      },
+      "form": {
+        "email": {
+          "label": "E-mail",
+          "placeholder": "Entrez votre e-mail"
+        },
+        "submit": "Envoyer le code"
+      }
+    },
+    "otp": {
+      "header": {
+        "title": "Vérifiez votre e-mail",
+        "subtitle": "Nous avons envoyé un code à 6 chiffres à {email}. Entrez-le ci-dessous pour continuer."
+      },
+      "form": {
+        "submit": "Vérifier l'e-mail"
+      },
+      "codeSent": "Un nouveau code a été envoyé à votre adresse e-mail.",
+      "missingEmail": {
+        "description": "Nous avons besoin de l'e-mail utilisé lors de l'inscription pour envoyer un code.",
+        "requestLink": "Retour à l'inscription"
+      }
+    },
+    "resetPassword": {
+      "header": {
+        "title": "Réinitialiser le mot de passe",
+        "subtitle": "Saisissez le code à 6 chiffres reçu par e-mail, puis choisissez un nouveau mot de passe."
+      },
+      "missingEmail": {
+        "description": "Commencez par l'écran mot de passe oublié avec votre e-mail pour recevoir un code.",
+        "requestLink": "Demander un code"
+      },
+      "form": {
+        "code": {
+          "label": "Code de vérification",
+          "placeholder": "Code à 6 chiffres"
+        },
+        "password": {
+          "label": "Nouveau mot de passe",
+          "placeholder": "Entrez votre nouveau mot de passe"
+        },
+        "confirmPassword": {
+          "label": "Confirmer le mot de passe",
+          "placeholder": "Confirmez votre nouveau mot de passe"
+        },
+        "submit": "Réinitialiser le mot de passe"
+      },
+      "success": {
+        "title": "Mot de passe réinitialisé !",
+        "subtitle": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+        "login": "Retour à la connexion"
+      }
+    },
+    "resendCode": {
+      "canResend": "Renvoyer le code",
+      "canResendIn": "Renvoyer dans",
+      "seconds": "secondes",
+      "button": "Renvoyer"
+    },
+    "errors": {
+      "USER_NOT_FOUND": "Aucun compte n'est associé à cet e-mail",
+      "INVALID_CREDENTIALS": "E-mail ou mot de passe incorrect",
+      "EMAIL_ALREADY_EXISTS": "Cet e-mail est déjà utilisé",
+      "EMAIL_NOT_VERIFIED": "Veuillez confirmer votre adresse e-mail pour continuer",
+      "EMAIL_ALREADY_VERIFIED": "Cet e-mail est déjà vérifié. Veuillez vous connecter.",
+      "INVALID_VERIFICATION_CODE": "Ce code est invalide ou a expiré",
+      "TOO_MANY_VERIFICATION_ATTEMPTS": "Trop de tentatives incorrectes. Demandez un nouveau code.",
+      "TOO_MANY_REQUESTS": "Trop de requêtes. Veuillez patienter quelques minutes et réessayer."
+    }
+  }
+}

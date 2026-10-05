@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "gemini-image": {
+      "command": "node",
+      "args": [
+        "--env-file-if-exists=.env",
+        "tooling/gemini-image-mcp/server.ts"
+      ]
+    }
+  }
+}

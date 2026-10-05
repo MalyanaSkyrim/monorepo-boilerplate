@@ -1,0 +1,63 @@
+/*
+ * Web theme — App Boilerplate Indigo (#3F46F9).
+ *
+ * Shares its primary scale with the mobile app on purpose: the marketing site
+ * and the product are one design system. Add another file in this directory
+ * to theme a second web app differently.
+ */
+:root {
+  /* Web Primary Theme (Indigo) */
+  --primary: 243 75% 59%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 243 75% 59%;
+
+  /* Web Primary Scale Tokens */
+  --color-primary-0: 236 237 254;
+  --color-primary-25: 195 198 253;
+  --color-primary-50: 167 170 252;
+  --color-primary-100: 126 131 251;
+  --color-primary-200: 101 107 250;
+  --color-primary-300: 63 70 249;
+
+  /* Web Success / Available Scale (#00C271) */
+  --color-success-0: 230 250 241;
+  --color-success-25: 194 242 222;
+  --color-success-50: 133 229 190;
+  --color-success-100: 51 212 147;
+  --color-success-200: 0 194 113;
+  --color-success-300: 0 145 84;
+
+  /* Focus Ring Indicator */
+  --color-indicator-primary: 63 70 249;
+}
+
+/*
+ * The marketing site runs `forcedTheme="light"`, so this block is inert today.
+ * It is kept in step with `:root` anyway — a stale palette here would surface
+ * the moment the theme toggle comes back.
+ */
+.dark {
+  /* Web Dark Primary Theme (Indigo) */
+  --primary: 243 75% 59%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 243 75% 59%;
+
+  /* Web Dark Primary Scale Tokens */
+  --color-primary-0: 236 237 254;
+  --color-primary-25: 195 198 253;
+  --color-primary-50: 167 170 252;
+  --color-primary-100: 126 131 251;
+  --color-primary-200: 101 107 250;
+  --color-primary-300: 63 70 249;
+
+  /* Web Dark Success / Available Scale */
+  --color-success-0: 0 71 41;
+  --color-success-25: 0 110 64;
+  --color-success-50: 0 145 84;
+  --color-success-100: 0 194 113;
+  --color-success-200: 133 229 190;
+  --color-success-300: 230 250 241;
+
+  /* Focus Ring Indicator */
+  --color-indicator-primary: 247 247 247;
+}

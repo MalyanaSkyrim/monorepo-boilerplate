@@ -1,0 +1,21 @@
+services:
+  cockroach:
+    container_name: app-boilerplate-cockroach-dev
+    image: cockroachdb/cockroach:latest-v26.2
+    restart: always
+    ports:
+      - '26259:26257'
+      - '8084:8080'
+    command: start-single-node --insecure
+    volumes:
+      - '${PWD}/cockroach-data/crdb:/cockroach/cockroach-data'
+
+  redis-dev:
+    container_name: app-boilerplate-redis-dev
+    # use redis 6.x because GCP Memorystore for Redis is based on 6.x
+    image: redis:6
+    restart: always
+    ports:
+      - '6381:6379'
+    volumes:
+      - '${PWD}/cache:/data'

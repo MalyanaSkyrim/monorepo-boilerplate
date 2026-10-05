@@ -1,0 +1,223 @@
+{
+  "profile": {
+    "menu": {
+      "general": "General",
+      "personalInfo": "Personal Information",
+      "language": "Language",
+      "helpCenter": "Help Center",
+      "legal": "Legal",
+      "privacyPolicy": "Privacy & Policy",
+      "termsConditions": "Terms & Conditions",
+      "aboutApp": "About App",
+      "logout": "Log out"
+    },
+    "helpCenter": {
+      "title": "Help Center",
+      "intro": "You can contact us using the email or phone number below. We're here to help.",
+      "supportEmail": "support@example.com",
+      "supportPhoneDisplay": "+1 555 000 0000",
+      "supportPhoneHref": "+15550000000",
+      "emailA11y": "Email support",
+      "phoneA11y": "Call support"
+    },
+    "language": {
+      "title": "Language",
+      "english": "English (US)",
+      "french": "French",
+      "arabic": "Arabic"
+    },
+    "personalData": {
+      "userName": "User Name",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile. Please try again.",
+      "title": "Personal Data",
+      "firstName": "First Name",
+      "enterFirstName": "Enter your first name",
+      "lastName": "Last Name",
+      "enterLastName": "Enter your last name",
+      "email": "Email",
+      "enterEmail": "Enter your email",
+      "phone": "Phone Number",
+      "enterPhone": "Enter your phone number",
+      "phoneValidation": "Phone number must be valid or empty",
+      "saveChanges": "Save Changes"
+    },
+    "privacy": {
+      "title": "Privacy & Policy",
+      "content": "This is placeholder text. Replace it with your own privacy policy before you publish the app, and have it reviewed by a qualified professional."
+    },
+    "terms": {
+      "title": "Terms & Conditions",
+      "content": "This is placeholder text. Replace it with your own terms and conditions before you publish the app, and have it reviewed by a qualified professional."
+    }
+  },
+  "home": {
+    "welcome": "Welcome, {name}",
+    "placeholder": "This is your home screen. Replace it with your first feature."
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "steps": {
+      "one": {
+        "title": "Everything you need in one place",
+        "description": "Describe the first benefit of your product here."
+      },
+      "two": {
+        "title": "Fast, simple and secure",
+        "description": "Describe the second benefit of your product here."
+      },
+      "three": {
+        "title": "Ready when you are",
+        "description": "Describe the third benefit of your product here."
+      }
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "settings": "Settings"
+  },
+  "auth": {
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "getStarted": {
+      "title": "Welcome to\nyour new app",
+      "subtitle": "Create an account or sign in to get started.",
+      "button": "Let's get Started",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign In"
+    },
+    "signUp": {
+      "header": {
+        "title": "Create an Account",
+        "subtitle": "Create an account to get started."
+      },
+      "form": {
+        "firstName": {
+          "label": "First Name",
+          "placeholder": "Enter your first name"
+        },
+        "lastName": {
+          "label": "Last Name",
+          "placeholder": "Enter your last name"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Enter your email"
+        },
+        "phone": {
+          "label": "Phone Number",
+          "placeholder": "Enter your phone number"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Enter your password"
+        },
+        "submit": "Sign Up"
+      },
+      "footer": {
+        "agreeTo": "By registering you agree to\n",
+        "terms": "Terms & Conditions",
+        "and": " and ",
+        "privacy": "Privacy Policy",
+        "alreadyHaveAccount": "Already have an account? ",
+        "signIn": "Sign In"
+      }
+    },
+    "signIn": {
+      "header": {
+        "title": "Welcome Back!",
+        "subtitle": "Sign in to access your account."
+      },
+      "form": {
+        "email": {
+          "label": "Email",
+          "placeholder": "Enter your email"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Enter your password"
+        },
+        "forgotPassword": "Forgot Password?",
+        "submit": "Sign In"
+      },
+      "options": {
+        "orContinue": "Or continue with",
+        "noAccount": "Don't have an account?",
+        "signUp": "Sign Up"
+      }
+    },
+    "forgotPassword": {
+      "header": {
+        "title": "Forgot Password?",
+        "subtitle": "Enter your email address and we'll send you a code to reset your password."
+      },
+      "form": {
+        "email": {
+          "label": "Email",
+          "placeholder": "Enter your email"
+        },
+        "submit": "Send code"
+      }
+    },
+    "otp": {
+      "header": {
+        "title": "Verify Your Email",
+        "subtitle": "We've sent a 6-digit code to {email}. Enter it below to continue."
+      },
+      "form": {
+        "submit": "Verify Email"
+      },
+      "codeSent": "A new code has been sent to your email.",
+      "missingEmail": {
+        "description": "We need the email you signed up with to send a code.",
+        "requestLink": "Back to sign up"
+      }
+    },
+    "resetPassword": {
+      "header": {
+        "title": "Reset Password",
+        "subtitle": "Enter the 6-digit code from your email, then choose a new password."
+      },
+      "missingEmail": {
+        "description": "Start from the forgot-password screen with your email to receive a code.",
+        "requestLink": "Request a code"
+      },
+      "form": {
+        "code": {
+          "label": "Verification code",
+          "placeholder": "6-digit code"
+        },
+        "password": {
+          "label": "New Password",
+          "placeholder": "Enter your new password"
+        },
+        "confirmPassword": {
+          "label": "Confirm Password",
+          "placeholder": "Confirm your new password"
+        },
+        "submit": "Reset Password"
+      },
+      "success": {
+        "title": "Password Reset!",
+        "subtitle": "Your password has been reset successfully. You can now sign in with your new password.",
+        "login": "Back to Sign In"
+      }
+    },
+    "resendCode": {
+      "canResend": "Resend Code",
+      "canResendIn": "Resend code in",
+      "seconds": "seconds",
+      "button": "Resend"
+    },
+    "errors": {
+      "USER_NOT_FOUND": "No account is associated with this email",
+      "INVALID_CREDENTIALS": "Incorrect email or password",
+      "EMAIL_ALREADY_EXISTS": "This email is already in use",
+      "EMAIL_NOT_VERIFIED": "Please confirm your email address to continue",
+      "EMAIL_ALREADY_VERIFIED": "This email is already verified. Please sign in.",
+      "INVALID_VERIFICATION_CODE": "That code is invalid or has expired",
+      "TOO_MANY_VERIFICATION_ATTEMPTS": "Too many incorrect attempts. Request a new code.",
+      "TOO_MANY_REQUESTS": "Too many requests. Please wait a few minutes and try again."
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "name": "app-boilerplate",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "env:pull": "tsx ./tooling/scripts/pull-env.ts",
+    "start": "pnpm with-env turbo start",
+    "build": "turbo build",
+    "dev": "pnpm with-env turbo dev",
+    "docs": "pnpm with-env turbo docs",
+    "lint": "turbo lint",
+    "spell": "cspell lint --no-progress --relative",
+    "typecheck": "turbo typecheck",
+    "test": "pnpm with-env turbo test",
+    "postinstall": "pnpm manypkg check",
+    "with-env": "dotenv -e .env --",
+    "format": "prettier --write \"**/*.{ts,tsx,md,js,json}\"",
+    "format:check": "prettier -c .",
+    "ci:checks": "pnpm lint && pnpm typecheck && pnpm spell && pnpm test && pnpm build",
+    "db:studio": "pnpm with-env pnpm --filter @app/database db:studio",
+    "db:start": "docker compose -f docker-compose.yml up -d",
+    "db:generate": "pnpm with-env turbo db:generate",
+    "db:stop": "docker compose -f docker-compose.yml down",
+    "db:push": "pnpm with-env pnpm --filter @app/database db:push",
+    "db:migrate": "pnpm with-env pnpm --filter @app/database db:migrate",
+    "db:seed": "pnpm with-env pnpm --filter @app/database db:seed",
+    "db:push:test": "dotenv -e .env -- sh -c 'DATABASE_URL=$TEST_DATABASE_URL pnpm --filter @app/database db:push:test'",
+    "clean": "find . -name node_modules -o -name build -o -name .next -o -name .turbo -o -name dist -o -name .docusaurus -o -name generated -type d -prune | xargs rm -rf",
+    "prepare": "husky"
+  },
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "19.1.0",
+      "react-dom": "19.1.0",
+      "react-native": "^0.81.5",
+      "react-native-web": "~0.21.0",
+      "@react-native-community/datetimepicker": "8.4.4",
+      "react-native-gesture-handler": "~2.28.0",
+      "react-native-reanimated": "~4.1.1",
+      "react-native-safe-area-context": "~5.6.0",
+      "react-native-svg": "15.12.1"
+    },
+    "patchedDependencies": {
+      "react-native-ui-datepicker@3.1.2": "patches/react-native-ui-datepicker@3.1.2.patch"
+    }
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tooling/*"
+  ],
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,scss,md,yaml,yml}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@app/config": "workspace:*",
+    "@clack/prompts": "^0.11.0",
+    "@commander-js/extra-typings": "^14.0.0",
+    "@cspell/dict-ar": "^1.1.7",
+    "@cspell/dict-fr-fr": "^2.2.5",
+    "@google-cloud/secret-manager": "^6.1.0",
+    "@manypkg/cli": "^0.23.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^24.10.0",
+    "autoprefixer": "^10.4.21",
+    "cross-env": "^10.1.0",
+    "cspell": "^8.17.1",
+    "dotenv": "^16.4.7",
+    "dotenv-cli": "^8.0.0",
+    "eslint": "^9.17.0",
+    "fastify-plugin": "^5.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
+    "minimatch": "^10.1.1",
+    "picocolors": "^1.1.1",
+    "pinst": "^3.0.0",
+    "postcss": "^8.4.47",
+    "prettier": "^3.2.5",
+    "react-hook-form": "^7.65.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.19.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
+    "zod": "^4.4.3"
+  }
+}

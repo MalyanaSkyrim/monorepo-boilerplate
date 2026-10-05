@@ -1,0 +1,24 @@
+{
+  "cli": {
+    "version": ">= 16.32.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "staging": {
+      "distribution": "internal",
+      "env": {
+        "APP_ENV": "staging",
+        "EXPO_PUBLIC_API_AUTH_URL": "https://api-auth-staging.example.com"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_AUTH_URL": "https://api-auth.example.com"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

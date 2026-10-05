@@ -1,0 +1,309 @@
+name: Deploy Production
+
+# Manual trigger only, so a fresh clone does not fail on every push.
+# Once the Google Cloud project, secrets and services exist, add a `push`
+# trigger for your deployment branch (see the Deployment section of README.md).
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force deploy all services'
+        type: boolean
+        default: false
+
+env:
+  REGION: europe-west1
+  PROJECT_ID: your-gcp-project-id # TODO: set your Google Cloud project
+  ARTIFACTS_REPO: app-boilerplate-docker # TODO: set your Artifact Registry repo
+  ENVIRONMENT: production
+
+jobs:
+  migrate-db:
+    name: 🗄️ Prisma Migrate (Production)
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: 🔍 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.10.0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🔐 Auth to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: ☁️ Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      # 🔐 Fetch DB URL from Secret Manager
+      - name: 🔑 Load DATABASE_URL from Secret Manager
+        id: secrets
+        run: |
+          echo "DATABASE_URL=$(gcloud secrets versions access latest \
+          --secret=DATABASE_URL_PROD)" >> $GITHUB_ENV
+
+      # 🔍 Detect if migrations exist
+      - name: 📂 Check for Prisma migrations
+        id: check-migrations
+        run: |
+          if [ -d "packages/database/prisma/migrations" ] && [ "$(ls -A packages/database/prisma/migrations)" ]; then
+            echo "has_migrations=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_migrations=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 🚀 Run migrations only if needed
+      - name: 🗄️ Run Prisma Migrations
+        if: steps.check-migrations.outputs.has_migrations == 'true'
+        working-directory: packages/database
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+  deploy-production:
+    name: 🚀 Deploy ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    environment: production
+
+    strategy:
+      matrix:
+        include:
+          - service: api-auth
+          - service: web
+
+    steps:
+      - name: 🔍 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔎 Check if ${{ matrix.service }} changed
+        id: turbo-ignore
+        run: |
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            echo "Force deploy requested."
+            echo "is_changed=true" >> $GITHUB_OUTPUT
+          else
+            set +e
+            npx turbo-ignore @app/${{ matrix.service }}
+            exit_code=$?
+            set -e
+
+            if [ $exit_code -eq 1 ]; then
+              echo "is_changed=true" >> $GITHUB_OUTPUT
+            else
+              echo "is_changed=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: 🔐 Auth to Google Cloud
+        if: steps.turbo-ignore.outputs.is_changed == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: ☁️ Setup gcloud
+        if: steps.turbo-ignore.outputs.is_changed == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 📦 Setup pnpm
+        if: steps.turbo-ignore.outputs.is_changed == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.10.0
+
+      - name: 🟢 Setup Node.js
+        if: steps.turbo-ignore.outputs.is_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+          cache: 'pnpm'
+
+      - name: 🛠️ Install dependencies
+        if: steps.turbo-ignore.outputs.is_changed == 'true'
+        run: pnpm install
+
+      - name: 🧪 Validate Environment
+        if: steps.turbo-ignore.outputs.is_changed == 'true'
+        run: pnpm env:validate-cloud ${{ matrix.service }} ${{ env.ENVIRONMENT }}
+        env:
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+
+      - name: 🚀 Submit to Cloud Build
+        if: steps.turbo-ignore.outputs.is_changed == 'true'
+        run: |
+          gcloud builds submit \
+            --config=apps/${{ matrix.service }}/cloudbuild.yaml \
+            --project=${{ env.PROJECT_ID }} \
+            --substitutions=_REGION=${{ env.REGION }},_ARTIFACTS_REPO=${{ env.ARTIFACTS_REPO }},_ENVIRONMENT=${{ env.ENVIRONMENT }},_TAG=${{ github.sha }} \
+            .
+
+  check-mobile:
+    name: 🔍 Check Mobile Changes
+    runs-on: ubuntu-latest
+    environment: production
+    outputs:
+      is_changed: ${{ steps.turbo-ignore.outputs.is_changed }}
+    steps:
+      - name: 🔍 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔎 Check if mobile changed
+        id: turbo-ignore
+        run: |
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            echo "Force deploy requested."
+            echo "is_changed=true" >> $GITHUB_OUTPUT
+          else
+            set +e
+            npx turbo-ignore @app/mobile
+            exit_code=$?
+            set -e
+
+            if [ $exit_code -eq 1 ]; then
+              echo "is_changed=true" >> $GITHUB_OUTPUT
+            else
+              echo "is_changed=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+  deploy-mobile:
+    name: 📱 Deploy Mobile App (iOS)
+    needs: check-mobile
+    if: needs.check-mobile.outputs.is_changed == 'true'
+    runs-on: macos-26
+    environment: production
+
+    steps:
+      - name: 🔍 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.10.0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+          cache: 'pnpm'
+
+      - name: 🛠️ Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔐 Auth to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: ☁️ Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 🔑 Retrieve Secrets and Write to .env
+        run: |
+          touch .env
+
+          # Fetch secrets from GCP Secret Manager
+          GOOGLE_IDS=$(gcloud secrets versions access latest --secret=GOOGLE_OAUTH_CLIENT_IDS)
+
+          # Parse Google Client IDs from the comma-separated list
+          IFS=',' read -r -a array <<< "$GOOGLE_IDS"
+          WEB_CLIENT_ID="${array[0]}"
+          ANDROID_CLIENT_ID="${array[1]}"
+          IOS_CLIENT_ID="${array[2]}"
+
+          # Write environment variables to .env file
+          echo "APP_ENV=production" >> .env
+          echo "ENVIRONMENT=production" >> .env
+          echo "EXPO_PUBLIC_API_AUTH_URL=https://api-auth.example.com" >> .env
+          echo "EXPO_PUBLIC_API_AUTH_PORT=" >> .env
+
+          echo "EXPO_PUBLIC_GOOGLE_OAUTH_WEB_CLIENT_ID=$WEB_CLIENT_ID" >> .env
+          echo "EXPO_PUBLIC_GOOGLE_OAUTH_ANDROID_CLIENT_ID=$ANDROID_CLIENT_ID" >> .env
+          echo "EXPO_PUBLIC_GOOGLE_OAUTH_IOS_CLIENT_ID=$IOS_CLIENT_ID" >> .env
+          echo "EXPO_PUBLIC_APPLE_SIGN_IN_ANDROID_SERVICE_ID=${{ vars.APPLE_SIGN_IN_SERVICE_ID }}" >> .env
+          echo "EXPO_PUBLIC_APPLE_SIGN_IN_ANDROID_REDIRECT_URI=https://api-auth.example.com/v1/auth/oauth/apple/android/callback" >> .env
+
+      - name: ⚙️ Generate iOS native directory (Expo Prebuild)
+        working-directory: apps/mobile
+        env:
+          EXPO_USE_PNPM: '1'
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: pnpm exec expo prebuild --platform ios --no-install
+
+      - name: 🔧 Configure Podfile to use modular headers
+        working-directory: apps/mobile/ios
+        run: ruby -e "lines = File.read('Podfile'); File.write('Podfile', \"use_modular_headers!\n\n\" + lines)"
+
+      - name: 💎 Setup Ruby and Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          working-directory: apps/mobile
+          bundler-cache: true
+
+      - name: 🗄️ Cache CocoaPods Spec Repo
+        uses: actions/cache@v4
+        with:
+          path: ~/.cocoapods
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('apps/mobile/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cocoapods-
+
+      - name: 🗄️ Cache CocoaPods Pods
+        id: pods-cache
+        uses: actions/cache@v4
+        with:
+          path: apps/mobile/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('apps/mobile/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: 🗄️ Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('apps/mobile/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
+      - name: 📦 Install CocoaPods
+        working-directory: apps/mobile/ios
+        run: pod install
+
+      - name: 🔑 Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🚀 Deploy to App Store Connect / TestFlight via Fastlane
+        working-directory: apps/mobile
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          MATCH_PASSWORD: ${{ secrets.FASTLANE_MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          RCT_NO_LAUNCH_PACKAGER: 1
+        run: bundle exec fastlane deploy

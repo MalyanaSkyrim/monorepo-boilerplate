@@ -1,0 +1,57 @@
+steps:
+  # Build the Docker image from the monorepo root context
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/web:${_TAG}
+      - -f
+      - apps/web/Dockerfile
+      - .
+
+  # Push to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/web:${_TAG}
+
+  # Deploy to Cloud Run
+  # --no-allow-unauthenticated avoids an IAM policy call that requires extra roles.
+  # Public access is granted separately in the next step.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - web-${_ENVIRONMENT}
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/web:${_TAG}
+      - --region=${_REGION}
+      - --platform=managed
+      - --no-allow-unauthenticated
+      - --memory=1Gi
+      - --cpu=1
+      - --port=3000
+
+  # Grant public access as a separate step so a missing IAM role doesn't fail the deploy
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud beta run services add-iam-policy-binding \
+          --region=${_REGION} \
+          --member=allUsers \
+          --role=roles/run.invoker \
+          web-${_ENVIRONMENT} || echo "⚠️ IAM binding skipped — grant roles/iam.serviceAccountUser to the Cloud Build SA if public access is required."
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACTS_REPO}/web:${_TAG}
+
+substitutions:
+  _REGION: europe-west1
+  _ARTIFACTS_REPO: app-boilerplate-docker
+  _ENVIRONMENT: staging
+  _TAG: latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY

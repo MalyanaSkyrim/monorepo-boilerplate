@@ -1,0 +1,65 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "globalDependencies": [".env", "pnpm-lock.yaml"],
+  "globalEnv": [
+    "API_AUTH_URL",
+    "API_AUTH_PORT",
+    "NODE_ENV",
+    "DATABASE_URL",
+    "TEST_DATABASE_URL",
+    "REDIS_URL",
+    "SKIP_ENV_VALIDATION",
+    "API_KEY",
+    "PRISMA_VERBOSE",
+    "PORT",
+    "AUTH_SECRET"
+  ],
+  "tasks": {
+    "db:generate": {
+      "inputs": ["prisma/**/*.prisma", "prisma/schema.prisma"],
+      "outputs": ["generated/**"],
+      "cache": false
+    },
+    "db:push:test": {
+      "inputs": ["prisma/**/*.prisma", "prisma/schema.prisma"],
+      "cache": false,
+      "env": ["TEST_DATABASE_URL", "DATABASE_URL"]
+    },
+    "build": {
+      "dependsOn": ["^build", "db:generate", "^db:generate"],
+      "env": ["SKIP_ENV_VALIDATION"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [
+        "build/**",
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        ".docusaurus/**"
+      ],
+      "outputLogs": "full"
+    },
+    "docs": {
+      "dependsOn": ["^db:generate"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "typecheck": {
+      "dependsOn": ["db:generate", "^typecheck"]
+    },
+    "test": {
+      "dependsOn": ["^db:push:test"],
+      "cache": false,
+      "outputs": ["coverage/**"]
+    },
+    "dev": {
+      "dependsOn": ["^db:generate", "^build"],
+      "persistent": true,
+      "cache": false
+    },
+    "start": {
+      "cache": false
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "brand": {
+    "name": "App Boilerplate",
+    "tagline": "Votre slogan ici"
+  },
+  "nav": {
+    "features": "Fonctionnalités",
+    "faq": "FAQ",
+    "about": "À propos"
+  },
+  "common": {
+    "languages": "Langues",
+    "loading": "Chargement",
+    "back": "Retour"
+  },
+  "marketing": {
+    "getStarted": "Commencer",
+    "learnMore": "En savoir plus",
+    "copyright": "© {year} App Boilerplate. Tous droits réservés."
+  },
+  "footer": {
+    "tagline": "Une phrase courte qui explique ce que fait votre produit et à qui il s'adresse.",
+    "platform": "Plateforme"
+  },
+  "home": {
+    "meta": {
+      "title": "App Boilerplate — Votre slogan ici",
+      "description": "Décrivez votre produit en une ou deux phrases. Ce texte est utilisé par les moteurs de recherche et les aperçus de liens."
+    },
+    "hero": {
+      "badge": "Disponible en accès anticipé",
+      "title": "Un titre clair sur la valeur que vous apportez.",
+      "subtitle": "Une ou deux phrases qui expliquent ce que fait votre produit, à qui il s'adresse et pourquoi il est meilleur que l'alternative.",
+      "note": "Gratuit pour commencer. Sans carte bancaire."
+    },
+    "features": {
+      "eyebrow": "Fonctionnalités",
+      "title": "Tout ce qu'il faut pour vous lancer.",
+      "lead": "Remplacez ces cartes par les trois avantages qui comptent le plus pour vos clients.",
+      "one": {
+        "title": "Premier avantage",
+        "body": "Expliquez le résultat obtenu par votre client, pas la fonctionnalité que vous avez créée."
+      },
+      "two": {
+        "title": "Deuxième avantage",
+        "body": "Restez court et concret. Une phrase suffit généralement."
+      },
+      "three": {
+        "title": "Troisième avantage",
+        "body": "Utilisez les mots de vos clients lorsqu'ils décrivent le problème."
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "Comment ça marche",
+      "title": "Opérationnel en trois étapes.",
+      "one": {
+        "title": "Créez un compte",
+        "body": "Inscrivez-vous en moins d'une minute avec votre e-mail ou un compte social.",
+        "tag": "Étape un"
+      },
+      "two": {
+        "title": "Configurez",
+        "body": "Décrivez la première chose que fait un nouveau client.",
+        "tag": "Étape deux"
+      },
+      "three": {
+        "title": "Obtenez le résultat",
+        "body": "Décrivez le moment où votre client perçoit la valeur.",
+        "tag": "Étape trois"
+      }
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Questions fréquentes.",
+      "q1": {
+        "question": "Qu'est-ce que ce produit ?",
+        "answer": "Répondez à la première question que se pose un nouveau visiteur, en deux ou trois phrases."
+      },
+      "q2": {
+        "question": "Combien ça coûte ?",
+        "answer": "Expliquez vos tarifs, ou indiquez quand ils seront annoncés."
+      },
+      "q3": {
+        "question": "Comment commencer ?",
+        "answer": "Dites précisément aux visiteurs quoi faire ensuite et ce qui se passe après."
+      },
+      "q4": {
+        "question": "Comment contacter le support ?",
+        "answer": "Indiquez le moyen le plus rapide de vous joindre et votre délai de réponse habituel."
+      }
+    },
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "subtitle": "Dites aux visiteurs ce qui se passe lorsqu'ils cliquent, puis dirigez-les vers votre page d'inscription ou votre fiche de store.",
+      "button": "Commencer"
+    }
+  },
+  "about": {
+    "meta": {
+      "title": "À propos d'App Boilerplate",
+      "description": "Pourquoi nous créons ce produit, ce en quoi nous croyons et où nous allons."
+    },
+    "hero": {
+      "eyebrow": "À propos",
+      "title": "Racontez votre histoire ici.",
+      "subtitle": "Une courte introduction : qui vous êtes et pourquoi ce produit existe."
+    },
+    "story": {
+      "eyebrow": "Notre histoire",
+      "title": "Pourquoi nous créons ce produit.",
+      "p1": "Décrivez le problème que vous avez observé et qui le rencontre. Les détails concrets convainquent mieux que les grandes promesses.",
+      "p2": "Expliquez comment votre produit change cela, et ce qui rend votre approche différente."
+    },
+    "values": {
+      "eyebrow": "Nos convictions",
+      "title": "Les principes derrière le produit.",
+      "one": {
+        "title": "Première valeur",
+        "body": "Un principe qui guide votre façon de construire."
+      },
+      "two": {
+        "title": "Deuxième valeur",
+        "body": "Une promesse que vous faites à vos clients."
+      },
+      "three": {
+        "title": "Troisième valeur",
+        "body": "Ce sur quoi vous refusez de transiger."
+      }
+    }
+  }
+}

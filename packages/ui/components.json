@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/styles/globals.css",
+    "baseColor": "zinc",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@app/ui/components",
+    "utils": "@app/ui/lib/utils",
+    "ui": "@app/ui/components",
+    "lib": "@app/ui/lib",
+    "hooks": "@app/ui/hooks"
+  },
+  "registries": {
+    "@shadcn-map": "http://shadcn-map.vercel.app/r/{name}.json"
+  }
+}

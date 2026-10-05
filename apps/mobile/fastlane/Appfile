@@ -1,0 +1,6 @@
+is_staging = ENV["APP_ENV"] == "staging" || ENV["ENVIRONMENT"] == "staging" || ENV["EXPO_PUBLIC_API_AUTH_URL"].to_s.include?("staging")
+app_identifier(is_staging ? "com.example.app.staging" : "com.example.app")
+apple_id(ENV["APPLE_ID"])
+
+itc_team_id(ENV["APPLE_TEAM_ID"])
+team_id(ENV["APPLE_TEAM_ID"])

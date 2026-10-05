@@ -1,0 +1,15 @@
+meta {
+  name: Profile
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{API_AUTH_URL}}/v1/auth/profile
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

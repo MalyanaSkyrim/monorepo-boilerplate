@@ -1,0 +1,131 @@
+{
+  "brand": {
+    "name": "App Boilerplate",
+    "tagline": "Your tagline goes here"
+  },
+  "nav": {
+    "features": "Features",
+    "faq": "FAQ",
+    "about": "About"
+  },
+  "common": {
+    "languages": "Languages",
+    "loading": "Loading",
+    "back": "Back"
+  },
+  "marketing": {
+    "getStarted": "Get started",
+    "learnMore": "Learn more",
+    "copyright": "© {year} App Boilerplate. All rights reserved."
+  },
+  "footer": {
+    "tagline": "A short sentence that says what your product does and who it is for.",
+    "platform": "Platform"
+  },
+  "home": {
+    "meta": {
+      "title": "App Boilerplate — Your tagline goes here",
+      "description": "Describe your product in one or two sentences. This text is used for search engines and link previews."
+    },
+    "hero": {
+      "badge": "Now in early access",
+      "title": "A clear headline about the value you deliver.",
+      "subtitle": "One or two sentences that explain what your product does, who it is for, and why it is better than the alternative.",
+      "note": "Free to start. No credit card required."
+    },
+    "features": {
+      "eyebrow": "Features",
+      "title": "Everything you need to launch.",
+      "lead": "Replace these cards with the three benefits your customers care about most.",
+      "one": {
+        "title": "First benefit",
+        "body": "Explain the outcome your customer gets, not the feature you built."
+      },
+      "two": {
+        "title": "Second benefit",
+        "body": "Keep it short and concrete. One sentence is usually enough."
+      },
+      "three": {
+        "title": "Third benefit",
+        "body": "Use the words your customers use when they describe the problem."
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "title": "Up and running in three steps.",
+      "one": {
+        "title": "Create an account",
+        "body": "Sign up in under a minute with your email or a social account.",
+        "tag": "Step one"
+      },
+      "two": {
+        "title": "Set things up",
+        "body": "Describe the one thing a new customer does first.",
+        "tag": "Step two"
+      },
+      "three": {
+        "title": "Get the result",
+        "body": "Describe the moment your customer sees the value.",
+        "tag": "Step three"
+      }
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Frequently asked questions.",
+      "q1": {
+        "question": "What is this product?",
+        "answer": "Answer the first question a new visitor asks. Keep it to two or three sentences."
+      },
+      "q2": {
+        "question": "How much does it cost?",
+        "answer": "Explain your pricing, or say when pricing will be announced."
+      },
+      "q3": {
+        "question": "How do I get started?",
+        "answer": "Tell visitors exactly what to do next and what happens after they do it."
+      },
+      "q4": {
+        "question": "How do I contact support?",
+        "answer": "Share the fastest way to reach you and how quickly you usually reply."
+      }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Tell visitors what happens when they click, then send them to your signup page or store listing.",
+      "button": "Get started"
+    }
+  },
+  "about": {
+    "meta": {
+      "title": "About App Boilerplate",
+      "description": "Why we are building this product, what we believe, and where we are headed."
+    },
+    "hero": {
+      "eyebrow": "About",
+      "title": "Tell your story here.",
+      "subtitle": "A short introduction to who you are and why this product exists."
+    },
+    "story": {
+      "eyebrow": "Our story",
+      "title": "Why we are building this.",
+      "p1": "Describe the problem you noticed and who has it. Concrete details are more convincing than big claims.",
+      "p2": "Explain how your product changes that, and what makes your approach different."
+    },
+    "values": {
+      "eyebrow": "What we believe",
+      "title": "The principles behind the product.",
+      "one": {
+        "title": "First value",
+        "body": "A principle that guides how you build."
+      },
+      "two": {
+        "title": "Second value",
+        "body": "A promise you make to your customers."
+      },
+      "three": {
+        "title": "Third value",
+        "body": "Something you refuse to compromise on."
+      }
+    }
+  }
+}

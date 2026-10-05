@@ -1,0 +1,94 @@
+// ============================================
+// AUTHENTICATION & USER MANAGEMENT
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String? // null for OAuth-only accounts
+  firstName     String
+  lastName      String?
+  phone         String?
+  avatar        String?
+  /// Null until the user confirms their email with a 6-digit code.
+  /// OAuth sign-ups are verified on creation, since the provider already checked it.
+  emailVerified DateTime?
+
+  oauthAccounts          OAuthAccount[]
+  sessions               Session[]
+  emailVerificationCodes EmailVerificationCode[]
+  passwordResetTokens    PasswordResetToken[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Links a user to a social sign-in identity (GOOGLE | APPLE | FACEBOOK).
+model OAuthAccount {
+  id                String @id @default(cuid())
+  userId            String
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String
+  providerAccountId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+/// Server-side session record. The auth API issues stateless JWTs by default;
+/// use this table when you need revocable sessions or refresh tokens.
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+/// 6-digit email-confirmation codes. Only the sha256 hash is stored.
+/// Kept separate from PasswordResetToken so a password-reset request cannot
+/// invalidate a pending verification code (and vice versa), and so attempts
+/// can be counted per code.
+model EmailVerificationCode {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email      String
+  codeHash   String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([email])
+  @@index([expiresAt])
+}
+
+/// 6-digit password-reset codes. Only the sha256 hash is stored.
+model PasswordResetToken {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email      String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([email])
+  @@index([expiresAt])
+}

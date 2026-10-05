@@ -1,0 +1,31 @@
+{
+  "extends": "@app/config/typescript/nextjs.json",
+  "compilerOptions": {
+    "strict": true,
+    "declaration": false,
+    "declarationMap": false,
+    "strictNullChecks": true,
+    "allowArbitraryExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@app/ui/*": ["../../packages/ui/src/*"],
+      "@app/ui": ["../../packages/ui/src/index.ts"],
+      "@app/ui/hooks": ["../../packages/ui/src/hooks/index.ts"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "global.d.ts",
+    "next-env.d.ts",
+    "next.config.mjs",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

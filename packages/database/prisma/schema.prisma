@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
+generator dbml {
+  provider        = "prisma-dbml-generator"
+  output          = "./dbml"
+  projectName     = "App Boilerplate"
+  projectDatabase = "CockroachDB"
+}
+
+datasource db {
+  provider = "cockroachdb"
+}

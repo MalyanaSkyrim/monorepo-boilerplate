@@ -1,0 +1,22 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll.eslint": "explicit",
+    "source.addMissingImports": "explicit",
+    "files.symlinks.enabled": "always"
+  },
+  "editor.formatOnSave": true,
+  "tailwindCSS.classFunctions": ["tva", "tv"],
+  "tailwindCSS.experimental.configFile": "packages/mobile-ui/src/tailwind/config.cjs",
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    ".*ClassName",
+    ".*Style"
+  ]
+}
