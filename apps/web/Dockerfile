@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Pin Node.js version
-ARG NODE_VERSION="22"
+ARG NODE_VERSION="24"
 
 # Pin Alpine version
 ARG ALPINE_VERSION="3.21"
@@ -50,7 +50,6 @@ WORKDIR /app
 ENV CI=true
 ENV SKIP_ENV_VALIDATION=true
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
 
 # First install dependencies (as they change less often)
 COPY .gitignore .gitignore
@@ -94,17 +93,17 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 smp && \
-  adduser --system --uid 1001 smp
+RUN addgroup --system --gid 1001 app && \
+  adduser --system --uid 1001 app
 
 # Copy the standalone output — this is a self-contained Node server
-COPY --from=installer --chown=smp:smp /app/apps/web/.next/standalone ./
+COPY --from=installer --chown=app:app /app/apps/web/.next/standalone ./
 # Copy static assets (CSS, JS chunks, images)
-COPY --from=installer --chown=smp:smp /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=installer --chown=app:app /app/apps/web/.next/static ./apps/web/.next/static
 # Copy the public directory (fonts, icons, etc.)
-COPY --from=installer --chown=smp:smp /app/apps/web/public ./apps/web/public
+COPY --from=installer --chown=app:app /app/apps/web/public ./apps/web/public
 
-USER smp
+USER app
 
 EXPOSE 3000
 

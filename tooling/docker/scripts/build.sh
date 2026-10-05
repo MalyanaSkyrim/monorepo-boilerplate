@@ -29,7 +29,7 @@ docker buildx build \
   $CACHE_FLAG \
   --build-arg TURBO_TOKEN="$TURBO_TOKEN" \
   --build-arg TURBO_TEAM="$TURBO_TEAM" \
-  --tag smp-"$1":latest \
+  --tag app-"$1":latest \
   --progress plain \
   --file "$MONOREPO_ROOT/apps/$1/Dockerfile" \
   "$MONOREPO_ROOT"

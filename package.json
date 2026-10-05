@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "env:pull": "tsx ./tooling/scripts/pull-env.ts",
+    "env:validate-cloud": "tsx ./tooling/scripts/validate-cloud-run-env.ts",
     "start": "pnpm with-env turbo start",
     "build": "turbo build",
     "dev": "pnpm with-env turbo dev",

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Pin Node.js version
-ARG NODE_VERSION="22"
+ARG NODE_VERSION="24"
 
 # Pin Alpine version
 ARG ALPINE_VERSION="3.21"
@@ -90,8 +90,8 @@ WORKDIR /app
 COPY --from=installer /app .
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 smp && \
-  adduser --system --uid 1001 smp
-USER smp
+RUN addgroup --system --gid 1001 app && \
+  adduser --system --uid 1001 app
+USER app
 
 CMD ["node", "apps/api-auth/build/app.js"]

@@ -49,5 +49,8 @@ jobs:
       - name: Lint and typecheck the code
         run: pnpm typecheck && pnpm lint
 
+      - name: Unit tests
+        run: pnpm --filter @app/common --filter @app/web --filter @app/mobile test
+
       - name: Build
         run: SKIP_ENV_VALIDATION=true CI=true NODE_ENV=production pnpm build --color
