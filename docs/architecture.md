@@ -37,13 +37,15 @@ Access tokens are stateless JWTs signed with `AUTH_SECRET`, valid for one day. T
 
 ## Data model
 
-`packages/database/prisma/auth/auth.prisma` holds the only models:
+`packages/database/prisma/auth/auth.prisma` holds the auth models:
 
 - `User` — account and profile
 - `OAuthAccount` — social identities linked to a user
 - `Session` — reserved for server-side sessions
 - `EmailVerificationCode` — hashed 6-digit codes with an attempt counter
 - `PasswordResetToken` — hashed 6-digit reset codes
+
+`packages/database/prisma/notification/notification.prisma` adds `DeviceToken` and `Notification`, used by `@app/notifications`. That package is ready to call from a service but is not wired into the auth API or the mobile app yet.
 
 Prisma reads every `*.prisma` file under `prisma/`, so add a folder per domain (for example `prisma/billing/billing.prisma`).
 

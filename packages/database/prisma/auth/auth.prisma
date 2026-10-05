@@ -18,6 +18,8 @@ model User {
   sessions               Session[]
   emailVerificationCodes EmailVerificationCode[]
   passwordResetTokens    PasswordResetToken[]
+  deviceTokens           DeviceToken[]
+  notifications          Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

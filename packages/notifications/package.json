@@ -1,0 +1,27 @@
+{
+  "name": "@app/notifications",
+  "version": "1.0.0",
+  "description": "In-app notifications and Expo push delivery",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "require": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@app/database": "workspace:*",
+    "expo-server-sdk": "^6.0.0"
+  },
+  "devDependencies": {
+    "@app/config": "workspace:*"
+  }
+}

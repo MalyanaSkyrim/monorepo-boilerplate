@@ -22,17 +22,18 @@ pnpm test --filter=@app/common
 
 Package names follow the `@app/<name>` convention and match the `name` field in each `package.json`.
 
-| Workspace              | Name               | What it is                                         |
-| ---------------------- | ------------------ | -------------------------------------------------- |
-| `apps/web`             | `@app/web`         | Next.js marketing site (next-intl, Tailwind)       |
-| `apps/mobile`          | `@app/mobile`      | Expo / React Native app (expo-router, NativeWind)  |
-| `apps/api-auth`        | `@app/api-auth`    | Fastify authentication API                         |
-| `packages/ui`          | `@app/ui`          | Web design system (Radix + Tailwind) and email kit |
-| `packages/mobile-ui`   | `@app/mobile-ui`   | Mobile design system (gluestack + NativeWind)      |
-| `packages/common`      | `@app/common`      | Shared zod schemas, models, brand and utilities    |
-| `packages/http-client` | `@app/http-client` | Typed HTTP client for the auth API                 |
-| `packages/database`    | `@app/database`    | Prisma schema and client                           |
-| `packages/config`      | `@app/config`      | Shared ESLint, Prettier and TypeScript configs     |
+| Workspace                | Name                 | What it is                                         |
+| ------------------------ | -------------------- | -------------------------------------------------- |
+| `apps/web`               | `@app/web`           | Next.js marketing site (next-intl, Tailwind)       |
+| `apps/mobile`            | `@app/mobile`        | Expo / React Native app (expo-router, NativeWind)  |
+| `apps/api-auth`          | `@app/api-auth`      | Fastify authentication API                         |
+| `packages/ui`            | `@app/ui`            | Web design system (Radix + Tailwind) and email kit |
+| `packages/mobile-ui`     | `@app/mobile-ui`     | Mobile design system (gluestack + NativeWind)      |
+| `packages/common`        | `@app/common`        | Shared zod schemas, models, brand and utilities    |
+| `packages/http-client`   | `@app/http-client`   | Typed HTTP client for the auth API                 |
+| `packages/notifications` | `@app/notifications` | In-app notifications and Expo push delivery        |
+| `packages/database`      | `@app/database`      | Prisma schema and client                           |
+| `packages/config`        | `@app/config`        | Shared ESLint, Prettier and TypeScript configs     |
 
 > **Always check the `scripts` field of the relevant `package.json` before running a command** — not every package has `build`, `test`, `typecheck`, etc.
 

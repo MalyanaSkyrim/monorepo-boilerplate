@@ -18,6 +18,7 @@ app-boilerplate/
 │   ├── common/           # Shared zod schemas, models, brand, utilities
 │   ├── http-client/      # Typed client for the auth API
 │   ├── database/         # Prisma schema and client
+│   ├── notifications/    # In-app notifications and Expo push delivery
 │   └── config/           # Shared ESLint, Prettier and TypeScript configs
 ├── tooling/              # Bruno API collection, deploy scripts, MCP server
 ├── docs/                 # Architecture and mobile deployment guides

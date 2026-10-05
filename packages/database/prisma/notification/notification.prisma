@@ -1,0 +1,37 @@
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+/// Expo push token of a device the user signed in on.
+model DeviceToken {
+  id         String  @id @default(cuid())
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String  @unique
+  deviceType String? // e.g. "ios", "android"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+/// In-app notification. `type` is a free-form category defined by the product.
+model Notification {
+  id       String  @id @default(cuid())
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type     String
+  title    String
+  body     String
+  entityId String? // id of the related record, if any
+  data     Json? // optional payload
+  isRead   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
