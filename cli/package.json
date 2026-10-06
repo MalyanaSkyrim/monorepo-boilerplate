@@ -24,7 +24,8 @@
     "create-monorepo-boilerplate": "./index.mjs"
   },
   "files": [
-    "index.mjs"
+    "index.mjs",
+    "lib"
   ],
   "scripts": {
     "test": "node --test"

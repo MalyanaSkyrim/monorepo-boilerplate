@@ -4,15 +4,32 @@
  *
  * Scaffolds a new project from the monorepo boilerplate: downloads the latest
  * template from GitHub, renames the project, package scope, brand and mobile
- * identifiers, then optionally initializes git and installs dependencies.
+ * identifiers, checks Node, pnpm and Docker, frees up local ports, then
+ * initializes git, installs dependencies, starts the docker compose services
+ * and sets up the database.
  */
 import { spawnSync } from 'node:child_process'
+import { randomBytes } from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
+
+import {
+  checkDocker,
+  checkNode,
+  checkTool,
+  parseMinVersion,
+} from './lib/checks.mjs'
+import {
+  applyPortChanges,
+  discoverPorts,
+  findFreePort,
+  isPortFree,
+} from './lib/ports.mjs'
+import { startServices } from './lib/services.mjs'
 
 const DEFAULT_TEMPLATE = 'MalyanaSkyrim/monorepo-boilerplate'
 const DEFAULT_REF = 'main'
@@ -31,6 +48,7 @@ const dim = color(2)
 const green = color(32)
 const red = color(31)
 const cyan = color(36)
+const yellow = color(33)
 
 const HELP = `
 ${bold('Usage:')} npx ${CLI_NAME} ${cyan('<project-name>')} [options]
@@ -45,6 +63,8 @@ ${bold('Options:')}
   --ref <ref>            Branch, tag or commit of the template (default: ${DEFAULT_REF})
   --no-install           Skip "pnpm install"
   --no-git               Skip "git init" and the initial commit
+  --no-services          Skip starting docker compose services and the database setup
+  --skip-checks          Continue when the Node version is too old
   -y, --yes              Accept defaults without prompting
   -h, --help             Show this help
   -v, --version          Show the CLI version
@@ -61,6 +81,10 @@ function fail(message) {
 
 function step(message) {
   console.log(`${cyan('◆')} ${message}`)
+}
+
+function warn(message) {
+  console.log(`  ${yellow('▲')} ${message}`)
 }
 
 function readOwnVersion() {
@@ -80,6 +104,8 @@ function parseCli(argv) {
       ref: { type: 'string', default: DEFAULT_REF },
       'no-install': { type: 'boolean', default: false },
       'no-git': { type: 'boolean', default: false },
+      'no-services': { type: 'boolean', default: false },
+      'skip-checks': { type: 'boolean', default: false },
       yes: { type: 'boolean', short: 'y', default: false },
       help: { type: 'boolean', short: 'h', default: false },
       version: { type: 'boolean', short: 'v', default: false },
@@ -158,14 +184,6 @@ function run(cmd, args, options = {}) {
     stdio: 'inherit',
     shell: process.platform === 'win32',
     ...options,
-  })
-  return result.status === 0
-}
-
-function hasCommand(cmd) {
-  const result = spawnSync(cmd, ['--version'], {
-    stdio: 'ignore',
-    shell: process.platform === 'win32',
   })
   return result.status === 0
 }
@@ -271,6 +289,139 @@ function setupEnv(root) {
   return false
 }
 
+async function confirm(question, fallback = true) {
+  const hint = fallback ? 'Y/n' : 'y/N'
+  const answer = (await ask(`${question} ${dim(`(${hint})`)}`, '')) || ''
+  if (!answer) return fallback
+  return /^y(es)?$/i.test(answer)
+}
+
+function printCheck(ok, label, detail = '') {
+  const mark = ok === true ? green('✔') : ok === false ? red('✖') : yellow('▲')
+  console.log(`  ${mark} ${label}${detail ? dim(`  ${detail}`) : ''}`)
+}
+
+/** Checks Node, pnpm, git and Docker. Returns what later steps can rely on. */
+async function checkRequirements(root, { interactive, skipChecks }) {
+  step('Checking requirements')
+  const node = checkNode(root)
+  const required = node.requirement
+    ? `requires ${node.requirement.range} (${node.requirement.source})`
+    : ''
+  printCheck(node.ok, `Node ${node.version}`, required)
+
+  const pnpm = checkTool('pnpm')
+  printCheck(
+    pnpm ? true : null,
+    pnpm ? `pnpm ${pnpm}` : 'pnpm not found',
+    pnpm ? '' : 'run "corepack enable"',
+  )
+
+  const git = checkTool('git')
+  printCheck(git ? true : null, git || 'git not found')
+
+  let docker = checkDocker()
+  if (!docker.installed) {
+    printCheck(
+      null,
+      'Docker not found',
+      'install Docker Desktop: https://docs.docker.com/get-docker/',
+    )
+  } else {
+    printCheck(
+      docker.compose ? true : null,
+      docker.version,
+      docker.compose ? 'compose available' : 'docker compose plugin missing',
+    )
+    while (!docker.running && interactive) {
+      printCheck(null, 'Docker is not running')
+      const answer = await ask(
+        'Start Docker, then press Enter to retry, or type "skip":',
+        '',
+      )
+      if (/^s(kip)?$/i.test(answer || '')) break
+      docker = checkDocker()
+    }
+    printCheck(
+      docker.running ? true : null,
+      docker.running ? 'Docker is running' : 'Docker is not running',
+    )
+  }
+
+  if (!node.ok && !skipChecks) {
+    const message = `Node ${node.version} is older than the ${node.requirement.range} this project needs. Install it with "nvm install ${parseMinVersion(node.requirement.range)[0]}" or from https://nodejs.org.`
+    if (!interactive)
+      return { abort: `${message}\nPass --skip-checks to continue anyway.` }
+    console.log(`\n${yellow('▲')} ${message}`)
+    if (!(await confirm('Continue anyway?', false)))
+      return { abort: 'Stopped. Nothing was kept.' }
+  }
+
+  return { pnpm: Boolean(pnpm), git: Boolean(git), docker }
+}
+
+/** Finds ports already in use and picks (or asks for) free ones. */
+async function resolvePorts(root, { interactive }) {
+  const ports = discoverPorts(root)
+  if (ports.length === 0) return ports
+  step('Checking local ports')
+  const taken = new Set(ports.map(({ port }) => port))
+  const changes = new Map()
+  for (const entry of ports) {
+    if (await isPortFree(entry.port)) {
+      printCheck(true, `${entry.port}`, entry.label)
+      continue
+    }
+    const suggestion = await findFreePort(entry.port, taken)
+    printCheck(false, `${entry.port} is in use`, entry.label)
+    let chosen = suggestion
+    if (interactive) {
+      for (;;) {
+        const answer = await ask(
+          `  Port for ${entry.label}:`,
+          String(suggestion ?? ''),
+        )
+        const port = Number(answer)
+        if (
+          Number.isInteger(port) &&
+          port > 0 &&
+          port < 65536 &&
+          (port === entry.port || !taken.has(port))
+        ) {
+          chosen = port
+          if (port === entry.port || (await isPortFree(port))) break
+          console.log(dim(`  ${port} is in use too.`))
+        } else {
+          console.log(dim('  Enter a free port number.'))
+        }
+      }
+    } else if (suggestion === null) {
+      console.log(dim(`  No free port found near ${entry.port}; keeping it.`))
+      continue
+    }
+    if (chosen !== entry.port) {
+      taken.add(chosen)
+      changes.set(entry.port, chosen)
+      entry.port = chosen
+      console.log(dim(`  Using ${chosen} for ${entry.label}`))
+    }
+  }
+  applyPortChanges(root, changes)
+  return ports
+}
+
+/** Replaces the "change-me" placeholders in .env with random secrets. */
+function generateSecrets(root) {
+  const envPath = path.join(root, '.env')
+  if (!fs.existsSync(envPath)) return
+  const text = fs.readFileSync(envPath, 'utf8')
+  const updated = text.replace(
+    /^((?:AUTH_SECRET|API_KEY)=)"change-me"$/gm,
+    (_, key) => `${key}"${randomBytes(32).toString('hex')}"`,
+  )
+  if (updated !== text) fs.writeFileSync(envPath, updated)
+}
+
 async function main() {
   let parsed
   try {
@@ -321,33 +472,43 @@ async function main() {
   step(`Downloading ${values.template}${dim(`#${values.ref}`)}`)
   await downloadTemplate(values.template, values.ref, dest)
 
+  const env = await checkRequirements(dest, {
+    interactive,
+    skipChecks: values['skip-checks'],
+  })
+  if (env.abort) {
+    fs.rmSync(dest, { recursive: true, force: true })
+    fail(env.abort)
+  }
+
   step(
     `Renaming to ${bold(names.display)} ${dim(`(@${names.scope}/*, ${names.bundleId})`)}`,
   )
   const changed = rewriteTree(dest, buildReplacements(names))
   console.log(dim(`  ${changed} files updated`))
 
-  if (setupEnv(dest)) step('Created .env from .env.example')
+  if (setupEnv(dest)) {
+    generateSecrets(dest)
+    step('Created .env with generated AUTH_SECRET and API_KEY')
+  }
 
-  const useGit = !values['no-git'] && hasCommand('git')
+  const ports = await resolvePorts(dest, { interactive })
+
+  const useGit = !values['no-git'] && env.git
   if (useGit) {
     step('Initializing git')
     run('git', ['init', '--quiet', '-b', 'main'], { cwd: dest })
   }
 
   let installed = false
-  if (!values['no-install']) {
-    if (hasCommand('pnpm')) {
-      step('Installing dependencies with pnpm')
-      installed = run('pnpm', ['install'], { cwd: dest })
-      if (!installed)
-        console.log(red('  pnpm install failed, run it again later.'))
+  if (!values['no-install'] && env.pnpm) {
+    step('Installing dependencies with pnpm')
+    installed = run('pnpm', ['install'], { cwd: dest })
+    if (installed) {
+      step('Generating the Prisma client')
+      run('pnpm', ['db:generate'], { cwd: dest })
     } else {
-      console.log(
-        dim(
-          '  pnpm not found. Enable it with "corepack enable", then run "pnpm install".',
-        ),
-      )
+      warn('pnpm install failed, run it again later.')
     }
   }
 
@@ -370,6 +531,28 @@ async function main() {
       )
   }
 
+  // Services start after the commit so their data folders stay out of it.
+  let pending = ['pnpm db:start', 'pnpm db:push', 'pnpm db:seed']
+  if (values['no-services']) {
+    console.log(dim('  Skipped starting services (--no-services).'))
+  } else if (!installed) {
+    console.log(
+      dim('  Skipped starting services: dependencies are not installed.'),
+    )
+  } else if (!env.docker.running || !env.docker.compose) {
+    console.log(dim('  Skipped starting services: Docker is not available.'))
+  } else {
+    pending = await startServices({
+      root: dest,
+      composePorts: ports.filter(
+        ({ source }) => source === 'docker-compose.yml',
+      ),
+      run,
+      step,
+      warn,
+    })
+  }
+
   const relative = path.relative(process.cwd(), dest) || '.'
   console.log(
     `\n${green('✔')} ${bold(names.display)} is ready in ${cyan(relative)}\n`,
@@ -377,8 +560,7 @@ async function main() {
   console.log('Next steps:')
   if (relative !== '.') console.log(`  cd ${relative}`)
   if (!installed) console.log('  pnpm install')
-  console.log('  # set AUTH_SECRET and API_KEY in .env')
-  console.log('  pnpm db:start && pnpm db:push && pnpm db:seed')
+  for (const command of pending) console.log(`  ${command}`)
   console.log('  pnpm dev\n')
 }
 
