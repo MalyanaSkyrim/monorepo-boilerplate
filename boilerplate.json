@@ -1,0 +1,186 @@
+{
+  "$comment": "Read by create-monorepo-boilerplate (cli/). Lists the apps a new project can include, the presets offered, and what to remove when an app is left out. Paths and patterns use the template's names (@app/*), before renaming. Patterns are JavaScript regular expressions with the m flag.",
+  "apps": {
+    "api-auth": {
+      "label": "Auth API",
+      "hint": "Fastify, sign-up and sign-in, used by the other apps",
+      "required": true
+    },
+    "web": {
+      "label": "Web app",
+      "hint": "Next.js marketing site",
+      "remove": ["apps/web", ".agent/skills/add-web-feature-guide"],
+      "packages": ["packages/ui"],
+      "edits": [
+        {
+          "file": ".github/workflows/deploy-staging.yml",
+          "pattern": "^[ \\t]+- service: web\\n"
+        },
+        {
+          "file": ".github/workflows/deploy-production.yml",
+          "pattern": "^[ \\t]+- service: web\\n"
+        },
+        {
+          "file": ".github/workflows/ci.yml",
+          "pattern": " --filter @app/web\\b"
+        },
+        {
+          "file": "tooling/scripts/validate-cloud-run-env.ts",
+          "pattern": "^[ \\t]+web: 'apps/web/env\\.ts',\\n"
+        },
+        {
+          "file": ".env.example",
+          "pattern": "^# -+\\n# Web app \\(apps/web\\)\\n# -+\\n(?:(?!# -).*\\n)*"
+        },
+        {
+          "file": "AGENTS.md",
+          "pattern": "^\\| `(apps/web|packages/ui)` .*\\n"
+        },
+        {
+          "file": ".agent/rules/AGENT.md",
+          "pattern": "^\\| `(apps/web|packages/ui)` .*\\n"
+        },
+        {
+          "file": "AGENTS.md",
+          "pattern": "^pnpm build --filter=@app/web\\n"
+        },
+        {
+          "file": ".agent/rules/AGENT.md",
+          "pattern": "^pnpm build --filter=@app/web\\n"
+        },
+        {
+          "file": "AGENTS.md",
+          "pattern": "^- `add-web-feature-guide` .*\\n"
+        },
+        {
+          "file": ".agent/rules/AGENT.md",
+          "pattern": "^- `add-web-feature-guide` .*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^│   [├└]── (web|ui)/ .*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^- A localized landing page .*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^- Web: http://localhost:\\d+\\n"
+        }
+      ]
+    },
+    "mobile": {
+      "label": "Mobile app",
+      "hint": "Expo / React Native, iOS and Android",
+      "remove": [
+        "apps/mobile",
+        "docs/mobile-deployment.md",
+        "tooling/deploy-mobile.sh",
+        "patches/react-native-ui-datepicker@3.1.2.patch",
+        ".agent/skills/add-app-feature-guide",
+        ".agent/skills/react-native-component-layers",
+        ".agent/skills/react-native-forms",
+        ".agent/skills/react-native-figma-conversion"
+      ],
+      "packages": ["packages/mobile-ui", "packages/http-client"],
+      "edits": [
+        {
+          "file": ".github/workflows/deploy-staging.yml",
+          "pattern": "^  check-mobile:\\n(?:(?: {4}.*)?\\n)*"
+        },
+        {
+          "file": ".github/workflows/deploy-production.yml",
+          "pattern": "^  check-mobile:\\n(?:(?: {4}.*)?\\n)*"
+        },
+        {
+          "file": ".github/workflows/deploy-staging.yml",
+          "pattern": "^  deploy-mobile:\\n(?:(?: {4}.*)?\\n)*"
+        },
+        {
+          "file": ".github/workflows/deploy-production.yml",
+          "pattern": "^  deploy-mobile:\\n(?:(?: {4}.*)?\\n)*"
+        },
+        {
+          "file": ".github/workflows/ci.yml",
+          "pattern": " --filter @app/mobile\\b"
+        },
+        {
+          "file": "package.json",
+          "pattern": ",\\n\\s*\\\"patchedDependencies\\\": \\{[^}]*\\}"
+        },
+        {
+          "file": ".env.example",
+          "pattern": "^# -+\\n# Mobile app \\(apps/mobile\\).*\\n# -+\\n(?:(?!# -).*\\n)*"
+        },
+        {
+          "file": "AGENTS.md",
+          "pattern": "^\\| `(apps/mobile|packages/mobile-ui|packages/http-client)` .*\\n"
+        },
+        {
+          "file": ".agent/rules/AGENT.md",
+          "pattern": "^\\| `(apps/mobile|packages/mobile-ui|packages/http-client)` .*\\n"
+        },
+        {
+          "file": "AGENTS.md",
+          "pattern": "^pnpm typecheck --filter=@app/mobile\\n"
+        },
+        {
+          "file": ".agent/rules/AGENT.md",
+          "pattern": "^pnpm typecheck --filter=@app/mobile\\n"
+        },
+        {
+          "file": "AGENTS.md",
+          "pattern": "^- `(add-app-feature-guide|react-native-[a-z-]+)` .*\\n"
+        },
+        {
+          "file": ".agent/rules/AGENT.md",
+          "pattern": "^- `(add-app-feature-guide|react-native-[a-z-]+)` .*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^│   [├└]── (mobile|mobile-ui|http-client)/ .*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^- A mobile app with onboarding.*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^- Xcode and/or Android Studio.*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^When testing on a physical phone.*\\n\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^\\d\\. \\*\\*(Mobile identifiers|Icons and artwork|Legal|Home screen)\\*\\*.*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^- The mobile job reads .*\\n"
+        },
+        {
+          "file": "README.md",
+          "pattern": "^- \\*\\*Mobile \\(iOS\\)\\*\\*.*\\n"
+        }
+      ]
+    }
+  },
+  "presets": {
+    "saas": {
+      "label": "SaaS web",
+      "apps": ["api-auth", "web"]
+    },
+    "mobile": {
+      "label": "Mobile app",
+      "apps": ["api-auth", "mobile"]
+    },
+    "full": {
+      "label": "SaaS web + mobile",
+      "apps": ["api-auth", "web", "mobile"]
+    }
+  },
+  "defaultPreset": "full"
+}

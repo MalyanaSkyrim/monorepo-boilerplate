@@ -10,7 +10,7 @@ Everything product-specific is a placeholder. Search for `TODO` and for `example
 npx create-monorepo-boilerplate my-app
 ```
 
-This downloads the latest version of this repo and renames the project, display name, `@app/*` package scope and mobile bundle id from `my-app`. It checks Node, pnpm and Docker, moves any local port that is already taken, creates `.env`, runs `git init` and `pnpm install`, then starts the `docker-compose.yml` services and creates and seeds the database. Run it with `--help` for the options. The CLI lives in [`cli/`](cli/README.md), which also explains how to publish it to npm.
+This asks which apps you want (SaaS web, mobile, both, or a custom pick), downloads the latest version of this repo, keeps only those apps, and renames the project, display name, `@app/*` package scope and mobile bundle id from `my-app`. It checks Node, pnpm and Docker, moves any local port that is already taken, creates `.env`, runs `git init` and `pnpm install`, then starts the `docker-compose.yml` services and creates and seeds the database. Run it with `--help` for the options. The CLI lives in [`cli/`](cli/README.md), which also explains how to publish it to npm.
 
 ## What is inside
 

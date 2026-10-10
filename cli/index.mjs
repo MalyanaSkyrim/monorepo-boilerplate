@@ -8,15 +8,23 @@
  * initializes git, installs dependencies, starts the docker compose services
  * and sets up the database.
  */
+import * as prompts from '@clack/prompts'
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
+import {
+  MANIFEST_FILE,
+  applyAppSelection,
+  loadManifest,
+  requiredApps,
+  resolveApps,
+  withRequired,
+} from './lib/apps.mjs'
 import {
   checkDocker,
   checkNode,
@@ -61,6 +69,8 @@ ${bold('Options:')}
   --bundle-id <id>       iOS/Android bundle identifier (default: com.example.<name>)
   --template <repo|dir>  GitHub "owner/repo" or a local directory (default: ${DEFAULT_TEMPLATE})
   --ref <ref>            Branch, tag or commit of the template (default: ${DEFAULT_REF})
+  --preset <name>        Apps to include: saas (web), mobile, or full (default: asks)
+  --apps <list>          Pick apps instead, comma-separated: web,mobile (api-auth is always included)
   --no-install           Skip "pnpm install"
   --no-git               Skip "git init" and the initial commit
   --no-services          Skip starting docker compose services and the database setup
@@ -103,6 +113,8 @@ function parseCli(argv) {
       template: { type: 'string', default: DEFAULT_TEMPLATE },
       ref: { type: 'string', default: DEFAULT_REF },
       'no-install': { type: 'boolean', default: false },
+      preset: { type: 'string' },
+      apps: { type: 'string' },
       'no-git': { type: 'boolean', default: false },
       'no-services': { type: 'boolean', default: false },
       'skip-checks': { type: 'boolean', default: false },
@@ -114,14 +126,25 @@ function parseCli(argv) {
   return { values, target: positionals[0] }
 }
 
-async function ask(question, fallback) {
-  const rl = createInterface({ input: process.stdin, output: process.stdout })
-  const suffix = fallback ? dim(` (${fallback})`) : ''
-  const answer = (
-    await rl.question(`${cyan('?')} ${question}${suffix} `)
-  ).trim()
-  rl.close()
-  return answer || fallback
+/** Exits cleanly when the user presses Ctrl+C or Escape in a prompt. */
+function answered(value) {
+  if (prompts.isCancel(value)) {
+    prompts.cancel('Cancelled.')
+    process.exit(1)
+  }
+  return value
+}
+
+async function ask(question, fallback, validate) {
+  const answer = answered(
+    await prompts.text({
+      message: question,
+      placeholder: fallback,
+      defaultValue: fallback,
+      validate,
+    }),
+  )
+  return (answer ?? '').trim() || fallback
 }
 
 export function toSlug(input) {
@@ -279,6 +302,43 @@ function rewriteTree(root, replacements) {
   return changed
 }
 
+/**
+ * Renaming the scope can break the alphabetical order of dependencies, which
+ * the template's `manypkg check` postinstall rejects. Re-sorts each map in
+ * place, one entry per line, so the file keeps its formatting.
+ */
+export function sortDependencyMaps(text) {
+  return text.replace(
+    /("(?:dependencies|devDependencies|peerDependencies|optionalDependencies)": \{\n)([^}]*?)(\n\s*\})/g,
+    (match, open, body, close) => {
+      const entries = body.split('\n').map((line) => line.replace(/,\s*$/, ''))
+      if (entries.some((line) => !/^\s*"[^"]+": /.test(line))) return match
+      const key = (line) => line.trim().split('"')[1]
+      const sorted = [...entries].sort((a, b) =>
+        key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0,
+      )
+      return open + sorted.join(',\n') + close
+    },
+  )
+}
+
+function sortWorkspaceDependencies(root) {
+  const files = [path.join(root, 'package.json')]
+  for (const dir of ['apps', 'packages', 'tooling']) {
+    const base = path.join(root, dir)
+    if (!fs.existsSync(base)) continue
+    for (const entry of fs.readdirSync(base)) {
+      files.push(path.join(base, entry, 'package.json'))
+    }
+  }
+  for (const file of files) {
+    if (!fs.existsSync(file)) continue
+    const text = fs.readFileSync(file, 'utf8')
+    const sorted = sortDependencyMaps(text)
+    if (sorted !== text) fs.writeFileSync(file, sorted)
+  }
+}
+
 function setupEnv(root) {
   const example = path.join(root, '.env.example')
   const env = path.join(root, '.env')
@@ -290,10 +350,9 @@ function setupEnv(root) {
 }
 
 async function confirm(question, fallback = true) {
-  const hint = fallback ? 'Y/n' : 'y/N'
-  const answer = (await ask(`${question} ${dim(`(${hint})`)}`, '')) || ''
-  if (!answer) return fallback
-  return /^y(es)?$/i.test(answer)
+  return answered(
+    await prompts.confirm({ message: question, initialValue: fallback }),
+  )
 }
 
 function printCheck(ok, label, detail = '') {
@@ -335,11 +394,10 @@ async function checkRequirements(root, { interactive, skipChecks }) {
     )
     while (!docker.running && interactive) {
       printCheck(null, 'Docker is not running')
-      const answer = await ask(
-        'Start Docker, then press Enter to retry, or type "skip":',
-        '',
+      const retry = await confirm(
+        'Start Docker, then retry? (No skips the services setup)',
       )
-      if (/^s(kip)?$/i.test(answer || '')) break
+      if (!retry) break
       docker = checkDocker()
     }
     printCheck(
@@ -422,6 +480,52 @@ function generateSecrets(root) {
   if (updated !== text) fs.writeFileSync(envPath, updated)
 }
 
+const CUSTOM = 'custom'
+
+function describeApps(manifest, apps) {
+  return apps.map((id) => manifest.apps[id].label).join(' + ')
+}
+
+/** Picks the apps from --preset / --apps, or asks: a preset, or Custom. */
+async function chooseApps(manifest, values, interactive) {
+  if (values.apps || values.preset || !interactive) {
+    return resolveApps(manifest, { preset: values.preset, apps: values.apps })
+  }
+  const preset = answered(
+    await prompts.select({
+      message: 'What are you building?',
+      initialValue: manifest.defaultPreset,
+      options: [
+        ...Object.entries(manifest.presets).map(([value, { label, apps }]) => ({
+          value,
+          label,
+          hint: describeApps(manifest, withRequired(manifest, apps)),
+        })),
+        { value: CUSTOM, label: 'Custom', hint: 'pick each app' },
+      ],
+    }),
+  )
+  if (preset !== CUSTOM) return resolveApps(manifest, { preset })
+
+  const required = requiredApps(manifest)
+  const optional = Object.entries(manifest.apps).filter(
+    ([id]) => !required.includes(id),
+  )
+  const picked = answered(
+    await prompts.multiselect({
+      message: `Which apps? (${describeApps(manifest, required)} is always included)`,
+      options: optional.map(([value, { label, hint }]) => ({
+        value,
+        label,
+        hint,
+      })),
+      initialValues: optional.map(([id]) => id),
+      required: false,
+    }),
+  )
+  return { apps: withRequired(manifest, picked) }
+}
+
 async function main() {
   let parsed
   try {
@@ -472,6 +576,24 @@ async function main() {
   step(`Downloading ${values.template}${dim(`#${values.ref}`)}`)
   await downloadTemplate(values.template, values.ref, dest)
 
+  const manifest = loadManifest(dest)
+  if (manifest) {
+    const selection = await chooseApps(manifest, values, interactive)
+    if (selection.error) {
+      fs.rmSync(dest, { recursive: true, force: true })
+      fail(selection.error)
+    }
+    step(`Apps: ${bold(describeApps(manifest, selection.apps))}`)
+    const result = applyAppSelection(dest, manifest, selection.apps)
+    if (result.removedPackages.length > 0) {
+      console.log(dim(`  Removed unused ${result.removedPackages.join(', ')}`))
+    }
+    for (const edit of result.stale) {
+      console.log(dim(`  Template edit matched nothing: ${edit}`))
+    }
+    fs.rmSync(path.join(dest, MANIFEST_FILE), { force: true })
+  }
+
   const env = await checkRequirements(dest, {
     interactive,
     skipChecks: values['skip-checks'],
@@ -485,6 +607,7 @@ async function main() {
     `Renaming to ${bold(names.display)} ${dim(`(@${names.scope}/*, ${names.bundleId})`)}`,
   )
   const changed = rewriteTree(dest, buildReplacements(names))
+  sortWorkspaceDependencies(dest)
   console.log(dim(`  ${changed} files updated`))
 
   if (setupEnv(dest)) {
@@ -505,6 +628,12 @@ async function main() {
     step('Installing dependencies with pnpm')
     installed = run('pnpm', ['install'], { cwd: dest })
     if (installed) {
+      // New names change line lengths and table widths; reformat so the
+      // project passes its own format check.
+      step('Formatting renamed files')
+      run('pnpm', ['exec', 'prettier', '--write', '.', '--log-level', 'warn'], {
+        cwd: dest,
+      })
       step('Generating the Prisma client')
       run('pnpm', ['db:generate'], { cwd: dest })
     } else {

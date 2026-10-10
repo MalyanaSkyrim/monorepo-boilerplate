@@ -67,3 +67,13 @@ test('rewrites template placeholders', () => {
 test('display name title-cases slug words', () => {
   assert.equal(toDisplayName('hello-world'), 'Hello World')
 })
+
+test('re-sorts dependency maps after the scope is renamed', async () => {
+  const { sortDependencyMaps } = await import('./index.mjs')
+  const input =
+    '{\n  "devDependencies": {\n    "@demo/config": "workspace:*",\n    "@clack/prompts": "^0.11.0"\n  },\n  "files": ["a"]\n}\n'
+  assert.equal(
+    sortDependencyMaps(input),
+    '{\n  "devDependencies": {\n    "@clack/prompts": "^0.11.0",\n    "@demo/config": "workspace:*"\n  },\n  "files": ["a"]\n}\n',
+  )
+})
