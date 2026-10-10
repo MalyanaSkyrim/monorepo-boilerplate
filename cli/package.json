@@ -1,0 +1,39 @@
+{
+  "name": "create-monorepo-boilerplate",
+  "version": "0.1.0",
+  "description": "Create an app or SaaS monorepo (Next.js, Expo, Fastify, Prisma) from the monorepo boilerplate",
+  "keywords": [
+    "create",
+    "boilerplate",
+    "starter",
+    "monorepo",
+    "turborepo",
+    "nextjs",
+    "expo",
+    "saas"
+  ],
+  "license": "MIT",
+  "author": "MALYANA Mohamed",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MalyanaSkyrim/monorepo-boilerplate.git",
+    "directory": "cli"
+  },
+  "type": "module",
+  "bin": {
+    "create-monorepo-boilerplate": "./index.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "lib"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1"
+  }
+}

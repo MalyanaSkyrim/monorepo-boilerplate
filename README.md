@@ -4,6 +4,14 @@ A monorepo starter for building an app or a SaaS: a Next.js web app, an Expo mob
 
 Everything product-specific is a placeholder. Search for `TODO` and for `example.com` to find what to replace.
 
+## Start a new project
+
+```sh
+npx create-monorepo-boilerplate my-app
+```
+
+This asks which apps you want (SaaS web, mobile, both, or a custom pick), downloads the latest version of this repo, keeps only those apps, and renames the project, display name, `@app/*` package scope and mobile bundle id from `my-app`. It checks Node, pnpm and Docker, moves any local port that is already taken, creates `.env`, runs `git init` and `pnpm install`, then starts the `docker-compose.yml` services and creates and seeds the database. Run it with `--help` for the options. The CLI lives in [`cli/`](cli/README.md), which also explains how to publish it to npm.
+
 ## What is inside
 
 ```
@@ -88,8 +96,8 @@ Run a script in one workspace with `pnpm --filter=@app/<name> <script>`.
 
 ## Make it yours
 
-1. **Name and brand**: edit `packages/common/src/brand.ts`, then replace `App Boilerplate` in `apps/web/locales/*.json`, `packages/ui/src/emails/theme.ts` and `.env`.
-2. **Package scope**: packages are published under `@app/*`. Keep it, or search and replace `@app/` across the repo.
+1. **Name and brand**: the CLI sets these for you. Otherwise edit `packages/common/src/brand.ts`, then replace `App Boilerplate` in `apps/web/locales/*.json`, `packages/ui/src/emails/theme.ts` and `.env`.
+2. **Package scope**: packages are published under `@app/*` (the CLI renames it). Keep it, or search and replace `@app/` across the repo.
 3. **Mobile identifiers**: set `APP_BUNDLE_ID` and `EXPO_PUBLIC_APP_NAME`, run `eas init` and set `EAS_PROJECT_ID`.
 4. **Icons and artwork**: replace the images in `apps/mobile/assets/` (app icon, splash, onboarding illustrations, get-started background) and the `AppLogo` components in `packages/ui` and `packages/mobile-ui`.
 5. **Copy**: rewrite the landing page text in `apps/web/locales/` and the mobile strings in `apps/mobile/src/lib/i18n/messages/`.
