@@ -28,6 +28,7 @@ app-boilerplate/
 │   ├── database/         # Prisma schema and client
 │   ├── notifications/    # In-app notifications and Expo push delivery
 │   └── config/           # Shared ESLint, Prettier and TypeScript configs
+├── infra/terraform/      # Google Cloud setup for staging and production
 ├── tooling/              # Bruno API collection, deploy scripts, MCP server
 ├── docs/                 # Architecture, push notifications and mobile deployment guides
 ├── .agent/               # AI agent rules and skills
@@ -41,6 +42,7 @@ Out of the box you get:
 - A localized landing page and about page (English and French; the mobile app also ships Arabic)
 - Rate limiting, structured logging, OpenAPI docs and typed error codes in the API
 - CI (spellcheck, format, typecheck, lint, build) and manual deploy workflows for Cloud Run and TestFlight
+- A Terraform setup that prepares Google Cloud for staging and production with one command
 
 See [docs/architecture.md](docs/architecture.md) for how the pieces connect.
 
@@ -109,8 +111,16 @@ Run a script in one workspace with `pnpm --filter=@app/<name> <script>`.
 
 The deploy workflows are manual (`workflow_dispatch`) so a fresh clone does not fail on push.
 
-- **Web and API** run on Google Cloud Run. Set `PROJECT_ID` and `ARTIFACTS_REPO` in `.github/workflows/deploy-*.yml`, add the `GCP_SA_KEY` secret, and create each service once with `tooling/create-service.sh <app> <staging|production>`.
-- After creating the `api-auth` service, set its environment on Cloud Run: `API_AUTH_PORT=3000` (the port Cloud Run routes to), `AUTH_SECRET`, `API_KEY`, `REDIS_URL`, `API_AUTH_URL`, and the Resend and OAuth values you use. Each deploy validates these against `apps/api-auth/src/env.ts` before building.
+- **Web and API** run on Google Cloud Run, with staging and production in one Google Cloud project. Set it up once with Terraform:
+
+  ```bash
+  gcloud auth application-default login
+  pnpm infra:init
+  ```
+
+  This creates (or prepares) the project, the image registry, the secrets, the `<app>-staging` and `<app>-production` services and keyless deploy access for GitHub Actions, then sets the repository variables the workflows read. Put each environment's values in `.env.staging` and `.env.production` first so it can push them to Secret Manager. See [infra/terraform/README.md](infra/terraform/README.md).
+
+- Service settings (CPU, memory, env vars, which secrets each service mounts) live in `infra/terraform/terraform.tfvars`. Change them there and run `pnpm infra:apply`. Each deploy validates the service's env against the app's `env.ts` before building.
 - Database migrations run in the deploy workflow once `packages/database/prisma/migrations` exists. It reads the `DATABASE_URL_STAGING` and `DATABASE_URL_PROD` secrets from Secret Manager.
 - The mobile job reads `GOOGLE_OAUTH_CLIENT_IDS` from Secret Manager (web, Android, iOS client ids, comma-separated) and the Apple and Fastlane values from GitHub secrets.
 - **Mobile (iOS)** ships to TestFlight with Fastlane. Follow [docs/mobile-deployment.md](docs/mobile-deployment.md).

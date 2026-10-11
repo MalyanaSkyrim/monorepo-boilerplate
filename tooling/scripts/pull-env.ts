@@ -7,8 +7,14 @@ import fs from 'fs'
 import path from 'path'
 import color from 'picocolors'
 
-// Configuration
-const PROJECT_ID = 'your-gcp-project-id'
+// Configuration: the project `pnpm infra:init` wrote to terraform.tfvars
+const PROJECT_ID =
+  fs
+    .readFileSync(
+      path.join(process.cwd(), 'infra/terraform/terraform.tfvars'),
+      'utf8',
+    )
+    .match(/^project_id\s*=\s*"([^"]*)"/m)?.[1] ?? ''
 const SECRET_NAME = 'DEV_ENVIRONMENT_VARIABLES'
 
 async function forceLogin(): Promise<boolean> {

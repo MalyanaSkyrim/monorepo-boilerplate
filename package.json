@@ -5,6 +5,10 @@
   "scripts": {
     "env:pull": "tsx ./tooling/scripts/pull-env.ts",
     "env:validate-cloud": "tsx ./tooling/scripts/validate-cloud-run-env.ts",
+    "infra:init": "tsx ./tooling/scripts/infra.ts init",
+    "infra:secrets": "tsx ./tooling/scripts/infra.ts secrets",
+    "infra:apply": "tsx ./tooling/scripts/infra.ts apply",
+    "infra:github": "tsx ./tooling/scripts/infra.ts github",
     "start": "pnpm with-env turbo start",
     "build": "turbo build",
     "dev": "pnpm with-env turbo dev",

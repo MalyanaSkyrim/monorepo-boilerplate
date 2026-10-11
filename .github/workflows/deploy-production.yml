@@ -1,8 +1,8 @@
 name: Deploy Production
 
 # Manual trigger only, so a fresh clone does not fail on every push.
-# Once the Google Cloud project, secrets and services exist, add a `push`
-# trigger for your deployment branch (see the Deployment section of README.md).
+# Once `pnpm infra:init` has set up Google Cloud (infra/terraform/README.md),
+# add a `push` trigger for your deployment branch if you want.
 on:
   workflow_dispatch:
     inputs:
@@ -11,10 +11,17 @@ on:
         type: boolean
         default: false
 
+# id-token lets google-github-actions/auth sign in with Workload Identity
+# Federation, so no service account key is stored in GitHub.
+permissions:
+  contents: read
+  id-token: write
+
+# Repository variables set by `pnpm infra:init` (or `pnpm infra:github`).
 env:
-  REGION: europe-west1
-  PROJECT_ID: your-gcp-project-id # TODO: set your Google Cloud project
-  ARTIFACTS_REPO: app-boilerplate-docker # TODO: set your Artifact Registry repo
+  REGION: ${{ vars.GCP_REGION }}
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  ARTIFACTS_REPO: ${{ vars.GCP_ARTIFACTS_REPO }}
   ENVIRONMENT: production
 
 jobs:
@@ -44,7 +51,9 @@ jobs:
       - name: 🔐 Auth to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: ☁️ Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
@@ -76,6 +85,8 @@ jobs:
 
   deploy-production:
     name: 🚀 Deploy ${{ matrix.service }}
+    # New code must not start before its migrations have run.
+    needs: migrate-db
     runs-on: ubuntu-latest
     environment: production
 
@@ -114,7 +125,9 @@ jobs:
         if: steps.turbo-ignore.outputs.is_changed == 'true'
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: ☁️ Setup gcloud
         if: steps.turbo-ignore.outputs.is_changed == 'true'
@@ -142,6 +155,7 @@ jobs:
         run: pnpm env:validate-cloud ${{ matrix.service }} ${{ env.ENVIRONMENT }}
         env:
           PROJECT_ID: ${{ env.PROJECT_ID }}
+          REGION: ${{ env.REGION }}
 
       - name: 🚀 Submit to Cloud Build
         if: steps.turbo-ignore.outputs.is_changed == 'true'
@@ -149,6 +163,7 @@ jobs:
           gcloud builds submit \
             --config=apps/${{ matrix.service }}/cloudbuild.yaml \
             --project=${{ env.PROJECT_ID }} \
+            --service-account=projects/${{ env.PROJECT_ID }}/serviceAccounts/${{ vars.GCP_BUILD_SA }} \
             --substitutions=_REGION=${{ env.REGION }},_ARTIFACTS_REPO=${{ env.ARTIFACTS_REPO }},_ENVIRONMENT=${{ env.ENVIRONMENT }},_TAG=${{ github.sha }} \
             .
 
@@ -213,7 +228,9 @@ jobs:
       - name: 🔐 Auth to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: ☁️ Setup gcloud
         uses: google-github-actions/setup-gcloud@v2

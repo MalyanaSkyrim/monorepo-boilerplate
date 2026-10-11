@@ -18,6 +18,9 @@ dbml
 .env.development.local
 .env.test.local
 .env.production.local
+# Per-environment values pushed to Secret Manager by `pnpm infra:secrets`
+.env.staging
+.env.production
 cockroach-data
 
 # Testing
@@ -47,3 +50,8 @@ messages/*.d.json.ts
 cache
 
 ai/figma/base
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
