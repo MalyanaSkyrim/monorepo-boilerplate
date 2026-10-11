@@ -25,6 +25,10 @@
           "pattern": " --filter @app/web\\b"
         },
         {
+          "file": "infra/terraform/terraform.tfvars",
+          "pattern": "^  web = \\{\\n(?:    .*\\n)*  \\}\\n"
+        },
+        {
           "file": "tooling/scripts/validate-cloud-run-env.ts",
           "pattern": "^[ \\t]+web: 'apps/web/env\\.ts',\\n"
         },

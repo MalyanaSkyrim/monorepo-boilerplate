@@ -37,14 +37,17 @@ Optional env overrides: `GEMINI_IMAGE_MODEL` (default `gemini-3-pro-image`), `GE
 
 ### Environment Management
 
-- `env:pull` - Pull the development `.env` from Google Secret Manager. Set `PROJECT_ID` and `SECRET_NAME` at the top of `scripts/pull-env.ts` first.
+- `env:pull` - Pull the development `.env` from Google Secret Manager (the `DEV_ENVIRONMENT_VARIABLES` secret, uploaded with `pnpm infra:secrets dev`). The project is read from `infra/terraform/terraform.tfvars`.
 
 ### Mobile
 
 - `deploy-mobile.sh [staging|production]` - Build the iOS app locally and upload it to TestFlight with Fastlane. See `docs/mobile-deployment.md`.
 
-### Cloud Run
+### Google Cloud
 
-- `create-service.sh <name> [staging|production]` - One-time creation of the `<name>-<environment>` Cloud Run service for an app under `apps/` (e.g. `web`, `api-auth`). Memory, CPU and port are read from the app's `CloudBuild.yaml`. Later deploys go through the GitHub deploy workflows.
+- `infra:init` - Set up Google Cloud for staging and production with Terraform. See `infra/terraform/README.md`.
+- `infra:secrets <staging|production|dev> [file]` - Push values from `.env.<environment>` to Secret Manager.
+- `infra:apply` - Apply `infra/terraform` after changing it.
+- `infra:github` - Set the GitHub repository variables the deploy workflows read.
 
 See the root `package.json` for all available scripts.

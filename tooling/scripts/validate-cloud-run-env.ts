@@ -7,7 +7,8 @@ const APP_PATHS: Record<string, string> = {
   web: 'apps/web/env.ts',
 }
 
-const REGION = 'europe-west1'
+// Set by the deploy workflows from the GCP_REGION repository variable.
+const REGION = process.env.REGION || 'europe-west1'
 
 async function getSecretValue(
   client: SecretManagerServiceClient,
